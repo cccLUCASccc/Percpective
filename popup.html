@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>CyberProtect Consentement</title>
+  <style>
+    body {
+      width: 300px;
+      height: 100%;
+      font-family: sans-serif;
+      padding: 10px;
+	  }
+    label {
+      display: block;
+      margin: 10px 0;
+    }
+    input[type="range"] {
+      width: 100%;
+    }
+    .submit {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>CyberProtect - Protection contre le cyberharcèlement</h2>
+  <form id="config-form">
+  <p>⚠️ Cette extension analyse vos messages visibles sur Messenger pour détecter des contenus inappropriés à l’aide de l’API Perspective de Google.</p>
+  <label>
+    <input type="checkbox" id="consentGiven" name="consentGiven" />
+    J’accepte que mes messages soient analysés localement et via Perspective API.
+  </label><br>
+      <label>
+      Seuil de toxicité (% d'alerte) :
+      <input type="range" id="toxicityThreshold" min="0" max="100" value="50" />
+      <span id="threshold-value">50%</span>
+    </label><br>
+  <button class="submit" type="submit">Sauvegarder</button>
+  <script src="popup.js"></script>
+</body>
+</html>
+
