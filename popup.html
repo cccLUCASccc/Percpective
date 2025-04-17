@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>CyberProtect Consentement</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 300px;
+      font-family: "Segoe UI", sans-serif;
+      padding: 16px;
+      background-color: #0c0c0c;
+      color: #cee4cc;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin-bottom: 12px;
+      color: #c9e9b8;
+    }
+
+    p {
+      font-size: 14px;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    input[type="checkbox"] {
+      margin-top: 8px;
+      transform: scale(1.2);
+      accent-color: #0df024;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin-top: 8px;
+      accent-color: #0df024;
+    }
+
+    #threshold-value {
+      margin-top: 4px;
+      font-weight: bold;
+      text-align: right;
+      font-size: 13px;
+      color: #0df024;
+    }
+
+    .submit {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #0df024;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit:hover {
+      background-color: #054e0c;
+    }
+  </style>
+</head>
+<body>
+  <h2>CyberProtect - Protection contre le cyberharcèlement</h2>
+  <form id="config-form">
+    <p>⚠️ Cette extension analyse vos messages visibles sur Messenger pour détecter des contenus inappropriés à l’aide de l’API Perspective de Google.</p>
+    
+    <label>
+      J’accepte que mes messages soient analysés localement et via Perspective API.
+      <input type="checkbox" id="consentGiven" name="consentGiven" />
+    </label>
+
+    <label>
+      Seuil de toxicité (% d'alerte) :
+      <input type="range" id="toxicityThreshold" min="0" max="100" value="50" />
+      <span id="threshold-value">50%</span>
+    </label>
+
+    <button class="submit" type="submit">Sauvegarder</button>
+  </form>
+
+  <script src="popup.js"></script>
+</body>
+</html>
