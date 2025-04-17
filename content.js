@@ -124,19 +124,46 @@ function Blocage(message) {
   blocage.style.left = '0';
   blocage.style.width = '100vw';
   blocage.style.height = '100vh';
-  blocage.style.backgroundColor = 'rgba(255, 77, 77, 0.95)';
-  blocage.style.color = 'white';
+  blocage.style.backgroundColor = '#0c0c0c';
+  blocage.style.color = '#cee4cc';
   blocage.style.display = 'flex';
+  blocage.style.flexDirection = 'column';
   blocage.style.justifyContent = 'center';
   blocage.style.alignItems = 'center';
   blocage.style.fontSize = '1.5rem';
   blocage.style.textAlign = 'center';
   blocage.style.padding = '20px';
   blocage.style.zIndex = '9999';
+
+  blocage.innerHTML = `
+    <p><span style="font-size: 180px;">💀</span></p>
+    <p>${message}</p>
+  `;
+
   document.body.appendChild(blocage);
 
   allBloqued = true;
+
+  // ✅ Doit être un let, défini une seule fois
+  let alreadyRedirected = false;
+
+  blocage.addEventListener('mousemove', function () {
+    if (alreadyRedirected) return;
+    alreadyRedirected = true;
+
+    const a = document.createElement('a');
+    a.href = 'https://www.youtube.com/embed/blar1yAMXWQ?autoplay=1&controls=0&rel=0&showinfo=0&modestbranding=1';
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.style.display = 'none';
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
 }
+
+
 
 async function analyze(text) {
   if (!text || text.trim() === '') return;
@@ -166,7 +193,7 @@ async function analyze(text) {
           essais--;
           showWarningPopup(toxicityScore);
         } else {
-          Blocage('💀 On vous avait prévenu. 💀');
+          Blocage('On vous avait prévenu.');
         }
       }
     }
