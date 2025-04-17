@@ -1,18 +1,20 @@
 document.addEventListener('DOMContentLoaded', function () {
-  // Charger les données depuis le stockage local
   chrome.storage.local.get(["consentGiven", "toxicityThreshold"], (result) => {
-    document.getElementById("consentGiven").checked = !!result.consentGiven;
     const threshold = result.toxicityThreshold || 50;
+    document.getElementById("consentGiven").checked = !!result.consentGiven;
     document.getElementById("toxicityThreshold").value = threshold;
     document.getElementById("threshold-value").innerText = `${threshold}%`;
-  });
 
-  // Mettre à jour l'affichage du seuil
+    updateSliderBackground(threshold);
+  });
+  
+
   document.getElementById("toxicityThreshold").addEventListener("input", (event) => {
-    document.getElementById("threshold-value").innerText = `${event.target.value}%`;
+    const value = event.target.value;
+    document.getElementById("threshold-value").innerText = `${value}%`;
+    updateSliderBackground(value);
   });
 
-  // Sauvegarder les choix de l'utilisateur
   document.getElementById("config-form").addEventListener("submit", (event) => {
     event.preventDefault();
 
@@ -25,5 +27,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  function updateSliderBackground(value) {
+    const color = `linear-gradient(to right, #FF0000, #00FF00 ${value}%, #333 ${value}%)`;
 
+    const slider = document.getElementById("toxicityThreshold");
+    slider.style.background = color;
+  }
 });

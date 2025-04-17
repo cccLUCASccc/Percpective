@@ -1,12 +1,74 @@
-console.log("Extension de cyber-prévention injectée !");
+import value from "./popup";
+
+console.log("Extension CyberProtect injectée !");
+
+function toggleExtensionBasedOnConsent(callback) {
+  chrome.storage.local.get(['consentGiven'], function (result) {
+    const consentGiven = result.consentGiven;
+    if (consentGiven === false || consentGiven === undefined) {
+      console.log("Extension CyberProtect désactivée (consentement non donné!).");
+      clearInterval(intervalId);
+      callback(false);
+    } else {
+      console.log("Extension CyberProtect activée!");
+      if (!intervalId) {
+        startInterval();
+      }
+      callback(true);
+    }
+  });
+}
+
+let intervalId = null;
+
+function startInterval() {
+  intervalId = setInterval(() => {
+    if (!allBloqued) {
+      const editable = getActiveEditableElement();
+      if (!editable) return;
+
+      lastEditableElement = editable;
+
+      const currentText = editable.innerText || editable.value || "";
+      if (currentText.trim() !== lastText) {
+        console.log("📝 Nouveau message détecté :", currentText.trim());
+        lastText = currentText.trim();
+
+        if (currentText.trim().length > 2) {
+          analyze(currentText.trim());
+        }
+      }
+    }
+  }, 1000);
+}
+
+toggleExtensionBasedOnConsent((isActive) => {
+  if (isActive) {
+    startInterval();
+  }
+});
+
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes.toxicityThreshold) {
+    seuil = changes.toxicityThreshold.newValue;
+    console.log("🔄 Seuil de toxicité mis à jour :", seuil);
+  }
+});
 
 let lastText = "";
 let enterBlocked = false;
 let allBloqued = false;
-let seuil = 30;
+let seuil = 50;
 let controller = new AbortController();
 let essais = 3;
 let lastEditableElement = null;
+
+chrome.storage.local.get(['toxicityThreshold'], (result) => {
+  if (result.toxicityThreshold !== undefined) {
+    seuil = result.toxicityThreshold;
+    console.log("🎚️ Seuil de toxicité récupéré :", seuil);
+  }
+});
 
 function getActiveEditableElement() {
   const active = document.activeElement;
@@ -75,45 +137,34 @@ function showWarningPopup(score) {
     <strong style="color:#d9534f;">⚠️ Alerte de cyberharcèlement</strong>
     <p style="margin: 8px 0;">
       Votre message a un <strong>score de toxicité de ${Math.round(score * 100)}%</strong>.<br/>
-      Il pourrait être perçu comme une tentative de cyberharcèlement.
+      Il va être supprimé car il pourrait être interprété comme une forme de cyberharcèlement.
     </p>
     <p style="margin: 4px 0;">
-      Il vous reste <strong>${essais}</strong> tentative(s) avant le blocage.
+      Il vous reste <strong>${essais}</strong> tentative(s) avant blocage.
     </p>
-    <button id="popup-ok-btn" style="
-      background-color: #0df024;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    ">
-      Modifier le message
-    </button>
   `;
 
   document.body.appendChild(popup);
-
-  document.getElementById("popup-ok-btn").addEventListener("click", () => {
-    allBloqued = false;
-    popup.remove();
-
-    if (lastEditableElement) {
-      const text = lastEditableElement.isContentEditable
-        ? lastEditableElement.innerText
-        : lastEditableElement.value;
-
-      simulateBackspaces(lastEditableElement, text.length);
-      lastText = "";
-    }
-  });
 
   setTimeout(() => {
     if (document.querySelector("#cyber-popup")) {
       allBloqued = false;
       popup.remove();
+      const currentEditable = getActiveEditableElement();
+
+      if (currentEditable && currentEditable === lastEditableElement) {
+        const text = currentEditable.isContentEditable
+          ? currentEditable.innerText
+          : currentEditable.value;
+
+        simulateBackspaces(currentEditable, text.length);
+        lastText = "";
+      } else {
+        console.log("⚠️ L'élément actif a changé, annulation de l'effacement.");
+        lastText = "";
+      }
     }
-  }, 15000);
+  }, 10000);
 }
 
 function Blocage(message) {
@@ -144,7 +195,6 @@ function Blocage(message) {
 
   allBloqued = true;
 
-  // ✅ Doit être un let, défini une seule fois
   let alreadyRedirected = false;
 
   blocage.addEventListener('mousemove', function () {
@@ -162,8 +212,6 @@ function Blocage(message) {
     document.body.removeChild(a);
   });
 }
-
-
 
 async function analyze(text) {
   if (!text || text.trim() === '') return;
@@ -201,22 +249,3 @@ async function analyze(text) {
     console.error("❌ Erreur analyse toxicité :", error);
   }
 }
-
-setInterval(() => {
-  if (!allBloqued) {
-    const editable = getActiveEditableElement();
-    if (!editable) return;
-
-    lastEditableElement = editable;
-
-    const currentText = editable.innerText || editable.value || "";
-    if (currentText.trim() !== lastText) {
-      console.log("📝 Nouveau message détecté :", currentText.trim());
-      lastText = currentText.trim();
-
-      if (currentText.trim().length > 2) {
-        analyze(currentText.trim());
-      }
-    }
-  }
-}, 1000);
