@@ -6,18 +6,18 @@ let allBloqued = false;
 let seuil = 30;
 let controller = new AbortController();
 let essais = 3;
-
+let lastEditableElement = null;
 
 function getActiveEditableElement() {
   const active = document.activeElement;
   if (active && active.isContentEditable) return active;
+  if (active && active.tagName === "TEXTAREA") return active;
   return null;
 }
 
 function blockEnterTemporarily() {
   enterBlocked = true;
 }
-
 
 document.addEventListener("keydown", function (event) {
   if (!allBloqued) {
@@ -34,26 +34,40 @@ document.addEventListener("keydown", function (event) {
   }
 }, true);
 
+function simulateBackspaces(element, count) {
+  element.focus();
+  for (let i = 0; i < count; i++) {
+    const event = new KeyboardEvent('keydown', {
+      key: 'Backspace',
+      code: 'Backspace',
+      keyCode: 8,
+      which: 8,
+      bubbles: true,
+      cancelable: true
+    });
+    element.dispatchEvent(event);
+  }
+}
 
 function showWarningPopup(score) {
   const existing = document.querySelector("#cyber-popup");
   if (existing) existing.remove();
 
   allBloqued = true;
-  
+
   const popup = document.createElement("div");
   popup.id = "cyber-popup";
   popup.style.position = "fixed";
   popup.style.bottom = "20px";
   popup.style.right = "20px";
-  popup.style.backgroundColor = "#fff8f0";
-  popup.style.border = "1px solid #ffcc00";
+  popup.style.backgroundColor = "#0c0c0c";
+  popup.style.border = "1px solid #0df024";
   popup.style.borderRadius = "10px";
   popup.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
   popup.style.padding = "16px 24px";
   popup.style.fontSize = "14px";
   popup.style.fontFamily = "Arial, sans-serif";
-  popup.style.color = "#333";
+  popup.style.color = "#cee4cc";
   popup.style.zIndex = "999999";
   popup.style.maxWidth = "300px";
 
@@ -67,7 +81,7 @@ function showWarningPopup(score) {
       Il vous reste <strong>${essais}</strong> tentative(s) avant le blocage.
     </p>
     <button id="popup-ok-btn" style="
-      background-color: #ffcc00;
+      background-color: #0df024;
       border: none;
       padding: 6px 12px;
       border-radius: 6px;
@@ -83,6 +97,15 @@ function showWarningPopup(score) {
   document.getElementById("popup-ok-btn").addEventListener("click", () => {
     allBloqued = false;
     popup.remove();
+
+    if (lastEditableElement) {
+      const text = lastEditableElement.isContentEditable
+        ? lastEditableElement.innerText
+        : lastEditableElement.value;
+
+      simulateBackspaces(lastEditableElement, text.length);
+      lastText = "";
+    }
   });
 
   setTimeout(() => {
@@ -92,7 +115,6 @@ function showWarningPopup(score) {
     }
   }, 15000);
 }
-
 
 function Blocage(message) {
   const blocage = document.createElement('div');
@@ -112,11 +134,9 @@ function Blocage(message) {
   blocage.style.padding = '20px';
   blocage.style.zIndex = '9999';
   document.body.appendChild(blocage);
-  
-  // Bloquer définitivement toutes les touches
+
   allBloqued = true;
 }
-
 
 async function analyze(text) {
   if (!text || text.trim() === '') return;
@@ -141,7 +161,7 @@ async function analyze(text) {
       console.log(`Toxicité détectée : ${toxicityScore * 100}%`);
       if (toxicityScore > seuil / 100) {
         blockEnterTemporarily();
-        
+
         if (essais > 0) {
           essais--;
           showWarningPopup(toxicityScore);
@@ -156,17 +176,19 @@ async function analyze(text) {
 }
 
 setInterval(() => {
-  if (!allBloqued) { // Ajouter cette vérification pour ne pas analyser quand tout est bloqué
+  if (!allBloqued) {
     const editable = getActiveEditableElement();
     if (!editable) return;
 
-    const currentText = editable.innerText.trim();
-    if (currentText !== lastText) {
-      console.log("📝 Nouveau message détecté :", currentText);
-      lastText = currentText;
+    lastEditableElement = editable;
 
-      if (currentText.length > 2) {
-        analyze(currentText);
+    const currentText = editable.innerText || editable.value || "";
+    if (currentText.trim() !== lastText) {
+      console.log("📝 Nouveau message détecté :", currentText.trim());
+      lastText = currentText.trim();
+
+      if (currentText.trim().length > 2) {
+        analyze(currentText.trim());
       }
     }
   }
