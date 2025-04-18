@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Options CyberProtect</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #0c0c0c;
+      color: #cee4cc;
+      padding: 20px;
+    }
+    input {
+      padding: 6px;
+      margin: 10px 0;
+      width: 100%;
+    }
+    button {
+      padding: 10px;
+      background-color: #0df024;
+      color: #0c0c0c;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0bbf1c;
+    }
+  </style>
+</head>
+<body>
+  <h2>🔐 Modifier le mot de passe Admin</h2>
+  <div id="old-password-section">
+    <label for="old-password">Ancien mot de passe :</label>
+    <input type="password" id="old-password" />
+    <button id="verify-old-password">Vérifier</button>
+  </div>
+  
+  <div id="new-password-section" style="display: none;">
+    <label for="new-password">Nouveau mot de passe :</label>
+    <input type="password" id="new-password" />
+    <button id="save-password">Sauvegarder</button>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

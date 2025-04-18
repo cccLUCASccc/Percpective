@@ -1,36 +1,67 @@
-document.addEventListener('DOMContentLoaded', function () {
-  chrome.storage.local.get(["consentGiven", "toxicityThreshold"], (result) => {
-    const threshold = result.toxicityThreshold || 50;
-    document.getElementById("consentGiven").checked = !!result.consentGiven;
-    document.getElementById("toxicityThreshold").value = threshold;
-    document.getElementById("threshold-value").innerText = `${threshold}%`;
+document.getElementById("toxicityThreshold").addEventListener("input", (event) => {
+  const thresholdValue = document.getElementById("threshold-value");
+  thresholdValue.textContent = `${event.target.value}%`;
+});
 
-    updateSliderBackground(threshold);
+document.getElementById("config-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const consentGiven = document.getElementById("consentGiven").checked;
+  const toxicityThreshold = document.getElementById("toxicityThreshold").value;
+
+  chrome.storage.local.set(
+    {
+      consentGiven: consentGiven,
+      toxicityThreshold: toxicityThreshold
+    },
+    () => {
+      alert("Vos paramètres ont été sauvegardés !");
+    }
+  );
+});
+
+document.getElementById("open-options").addEventListener("click", (event) => {
+  event.preventDefault();
+  chrome.runtime.openOptionsPage();
+});
+
+document.getElementById("block-extension").addEventListener("click", (event) => {
+  event.preventDefault();
+  const input = prompt("Mot de passe admin requis pour bloquer l'extension :");
+  verifyPassword(input, (isValid) => {
+    if (isValid) {
+      alert("Extension bloquée.");
+    } else {
+      alert("Mot de passe incorrect.");
+    }
   });
-  
+});
 
-  document.getElementById("toxicityThreshold").addEventListener("input", (event) => {
-    const value = event.target.value;
-    document.getElementById("threshold-value").innerText = `${value}%`;
-    updateSliderBackground(value);
+document.getElementById("uninstall-extension").addEventListener("click", (event) => {
+  event.preventDefault();
+  const input = prompt("Mot de passe admin requis pour désinstaller l'extension :");
+  verifyPassword(input, (isValid) => {
+    if (isValid) {
+      alert("Extension désinstallée.");
+    } else {
+      alert("Mot de passe incorrect.");
+    }
   });
+});
 
-  document.getElementById("config-form").addEventListener("submit", (event) => {
-    event.preventDefault();
+function verifyPassword(inputPassword, callback) {
+  const encoder = new TextEncoder();
+  crypto.subtle.digest("SHA-256", encoder.encode(inputPassword)).then((buffer) => {
+    const hash = Array.from(new Uint8Array(buffer))
+      .map(b => b.toString(16).padStart(2, "0"))
+      .join("");
 
-    const consentGiven = document.getElementById("consentGiven").checked;
-    const toxicityThreshold = parseInt(document.getElementById("toxicityThreshold").value, 10);
-
-    chrome.storage.local.set({ consentGiven, toxicityThreshold }, () => {
-      alert("Configuration sauvegardée !");
-      window.close();
+    chrome.storage.local.get("adminPasswordHash", (result) => {
+      if (result.adminPasswordHash === hash) {
+        callback(true);
+      } else {
+        callback(false);
+      }
     });
   });
-
-  function updateSliderBackground(value) {
-    const color = `linear-gradient(to right, #FF0000, #00FF00 ${value}%, #333 ${value}%)`;
-
-    const slider = document.getElementById("toxicityThreshold");
-    slider.style.background = color;
-  }
-});
+}

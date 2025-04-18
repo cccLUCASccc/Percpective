@@ -1,5 +1,33 @@
 console.log("Extension CyberProtect injectée !");
 
+const currentDomain = window.location.hostname;
+const DIX_JOURS_EN_MS = 10 * 24 * 60 * 60 * 1000;
+
+chrome.storage.local.get(['blockedSites'], (result) => {
+  const blockedSites = result.blockedSites || {};
+  const blocage = blockedSites[currentDomain];
+
+  if (blocage && blocage.timestamp) {
+    const tempsEcoule = Date.now() - blocage.timestamp;
+    const tempsRestant = DIX_JOURS_EN_MS - tempsEcoule;
+
+    if (tempsRestant > 0) {
+      const joursRestants = Math.ceil(tempsRestant / (24 * 60 * 60 * 1000));
+      Blocage(`Vous êtes bloqué sur ce site pour comportements toxiques répétés.<br><br>⏳ Temps restant : <strong>${joursRestants} jour(s)</strong>`, false);
+    } else {
+      delete blockedSites[currentDomain];
+      chrome.storage.local.set({ blockedSites });
+      toggleExtensionBasedOnConsent((isActive) => {
+        if (isActive) startInterval();
+      });
+    }
+  } else {
+    toggleExtensionBasedOnConsent((isActive) => {
+      if (isActive) startInterval();
+    });
+  }
+});
+
 let seuil = 30;
 
 function toggleExtensionBasedOnConsent(callback) {
@@ -51,7 +79,7 @@ toggleExtensionBasedOnConsent((isActive) => {
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === 'local') {
-    if (changes.consentGiven) {
+    if (changes.consentGiven && userBlocked == false) {
       toggleExtensionBasedOnConsent((isActive) => {
         if (isActive) {
           startInterval();
@@ -118,6 +146,7 @@ function showWarningPopup(score) {
   if (existing) existing.remove();
 
   allBloqued = true;
+  chrome.storage.local.set({ userBlocked: true });
 
   const popup = document.createElement("div");
   popup.id = "cyber-popup";
@@ -161,10 +190,10 @@ function showWarningPopup(score) {
         lastText = "";
       }
     }
-  }, 8000);
+  }, 4000);
 }
 
-function Blocage(message) {
+function Blocage(message, activeVideo) {
   const blocage = document.createElement('div');
   blocage.textContent = message;
   blocage.style.position = 'fixed';
@@ -190,24 +219,37 @@ function Blocage(message) {
 
   document.body.appendChild(blocage);
 
+  const currentDomain = window.location.hostname;
+  const blockTimestamp = Date.now();
+
+  chrome.storage.local.get(['blockedSites'], (result) => {
+    const blockedSites = result.blockedSites || {};
+    blockedSites[currentDomain] = {
+      timestamp: blockTimestamp
+    };
+    chrome.storage.local.set({ blockedSites });
+  });
+
   allBloqued = true;
 
   let alreadyRedirected = false;
 
-  blocage.addEventListener('mousemove', function () {
-    if (alreadyRedirected) return;
-    alreadyRedirected = true;
-
-    const a = document.createElement('a');
-    a.href = 'https://www.youtube.com/embed/blar1yAMXWQ?autoplay=1&controls=0&rel=0&showinfo=0&modestbranding=1';
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.style.display = 'none';
-
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  });
+  if(activeVideo){
+    blocage.addEventListener('mousemove', function () {
+      if (alreadyRedirected) return;
+      alreadyRedirected = true;
+  
+      const a = document.createElement('a');
+      a.href = 'https://www.youtube.com/embed/blar1yAMXWQ?autoplay=1&controls=0&rel=0&showinfo=0&modestbranding=1';
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.style.display = 'none';
+  
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+  }
 }
 
 async function analyze(text) {
@@ -233,12 +275,11 @@ async function analyze(text) {
       console.log(`Toxicité détectée : ${toxicityScore * 100}%`);
       if (toxicityScore > seuil / 100) {
         blockEnterTemporarily();
-
+        --essais;
         if (essais > 0) {
-          essais--;
           showWarningPopup(toxicityScore);
         } else {
-          Blocage('On vous avait prévenu.');
+          Blocage('On vous avait prévenu.', true);
         }
       }
     }
