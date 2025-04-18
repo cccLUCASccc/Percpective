@@ -1,16 +1,17 @@
-import value from "./popup";
-
 console.log("Extension CyberProtect injectée !");
 
+let seuil = 30;
+
 function toggleExtensionBasedOnConsent(callback) {
-  chrome.storage.local.get(['consentGiven'], function (result) {
+  chrome.storage.local.get(['consentGiven', 'toxicityThreshold'], function (result) {
     const consentGiven = result.consentGiven;
+    seuil = result.toxicityThreshold !== undefined ? result.toxicityThreshold : 30;
     if (consentGiven === false || consentGiven === undefined) {
-      console.log("Extension CyberProtect désactivée (consentement non donné!).");
+      console.log("L'extension est désactivée car consentGiven est défini sur false.");
       clearInterval(intervalId);
       callback(false);
     } else {
-      console.log("Extension CyberProtect activée!");
+      console.log("L'extension est activée.");
       if (!intervalId) {
         startInterval();
       }
@@ -48,27 +49,28 @@ toggleExtensionBasedOnConsent((isActive) => {
   }
 });
 
-chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === 'local' && changes.toxicityThreshold) {
-    seuil = changes.toxicityThreshold.newValue;
-    console.log("🔄 Seuil de toxicité mis à jour :", seuil);
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'local') {
+    if (changes.consentGiven) {
+      toggleExtensionBasedOnConsent((isActive) => {
+        if (isActive) {
+          startInterval();
+        }
+      });
+    }
+    if (changes.toxicityThreshold) {
+      seuil = changes.toxicityThreshold.newValue !== undefined ? changes.toxicityThreshold.newValue : 30;
+      console.log("Le seuil de toxicité a été mis à jour :", seuil);
+    }
   }
 });
 
 let lastText = "";
 let enterBlocked = false;
 let allBloqued = false;
-let seuil = 50;
 let controller = new AbortController();
 let essais = 3;
 let lastEditableElement = null;
-
-chrome.storage.local.get(['toxicityThreshold'], (result) => {
-  if (result.toxicityThreshold !== undefined) {
-    seuil = result.toxicityThreshold;
-    console.log("🎚️ Seuil de toxicité récupéré :", seuil);
-  }
-});
 
 function getActiveEditableElement() {
   const active = document.activeElement;
@@ -150,21 +152,16 @@ function showWarningPopup(score) {
     if (document.querySelector("#cyber-popup")) {
       allBloqued = false;
       popup.remove();
-      const currentEditable = getActiveEditableElement();
+      if (lastEditableElement) {
+        const text = lastEditableElement.isContentEditable
+          ? lastEditableElement.innerText
+          : lastEditableElement.value;
 
-      if (currentEditable && currentEditable === lastEditableElement) {
-        const text = currentEditable.isContentEditable
-          ? currentEditable.innerText
-          : currentEditable.value;
-
-        simulateBackspaces(currentEditable, text.length);
-        lastText = "";
-      } else {
-        console.log("⚠️ L'élément actif a changé, annulation de l'effacement.");
+        simulateBackspaces(lastEditableElement, text.length);
         lastText = "";
       }
     }
-  }, 10000);
+  }, 8000);
 }
 
 function Blocage(message) {
