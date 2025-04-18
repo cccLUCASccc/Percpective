@@ -236,6 +236,10 @@
     }, 4000);
   }
 
+  // Fonction qui :
+  // Affiche une page noire bloquante sur le site.
+  // Sauvegarde la date de blocage.
+  // Redirige vers une vidéo "éducative" lorsque l'utilisateur bouge sa souris 
   function Blocage(message, activeVideo) {
     const blocage = document.createElement('div');
     blocage.textContent = message;
@@ -295,6 +299,10 @@
     }
   }
 
+  // Fonction qui :
+  // Envoie le texte à l’API de Google pour analyse.
+  // Si la toxicité dépasse le seuil, bloque Enter + décrémente essais.
+  // Si plus de tentatives, l’utilisateur est bloqué via Blocage().
   async function analyze(text) {
     if (!text || text.trim() === '') return;
 
