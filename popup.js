@@ -1,3 +1,18 @@
+// Au chargement de la popup
+document.addEventListener("DOMContentLoaded", () => {
+  chrome.storage.local.get(["consentGiven", "toxicityThreshold"], (result) => {
+    if (typeof result.consentGiven !== "undefined") {
+      document.getElementById("consentGiven").checked = result.consentGiven;
+    }
+
+    if (typeof result.toxicityThreshold !== "undefined") {
+      const toxicityInput = document.getElementById("toxicityThreshold");
+      toxicityInput.value = result.toxicityThreshold;
+      document.getElementById("threshold-value").textContent = `${result.toxicityThreshold}%`;
+    }
+  });
+});
+
 document.getElementById("toxicityThreshold").addEventListener("input", (event) => {
   const thresholdValue = document.getElementById("threshold-value");
   thresholdValue.textContent = `${event.target.value}%`;

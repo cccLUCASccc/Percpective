@@ -1,6 +1,7 @@
 console.log("Extension CyberProtect injectée !");
 
 const currentDomain = window.location.hostname;
+console.log("currentDomain" + currentDomain);
 const DIX_JOURS_EN_MS = 10 * 24 * 60 * 60 * 1000;
 
 chrome.storage.local.get(['blockedSites'], (result) => {
@@ -234,17 +235,17 @@ function Blocage(message, activeVideo) {
 
   let alreadyRedirected = false;
 
-  if(activeVideo){
+  if (activeVideo) {
     blocage.addEventListener('mousemove', function () {
       if (alreadyRedirected) return;
       alreadyRedirected = true;
-  
+
       const a = document.createElement('a');
       a.href = 'https://www.youtube.com/embed/blar1yAMXWQ?autoplay=1&controls=0&rel=0&showinfo=0&modestbranding=1';
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
       a.style.display = 'none';
-  
+
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
