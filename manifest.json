@@ -10,7 +10,9 @@
 		"https://twitter.com/*",
 		"https://www.messenger.com/*",
 		"https://www.snapchat.com/*",
-		"https://web.telegram.org/*"
+		"https://web.telegram.org/*",
+		"https://web.whatsapp.com/*",
+		"https://www.tiktok.com/*"
 	],
 	"icons": {
 		"16": "icons/icon_16.png",

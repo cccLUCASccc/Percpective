@@ -17,3 +17,5 @@ extension
 
 ```
 >>>>>>> master
+
+Mode d'emploi de l'extension CyberAgent
