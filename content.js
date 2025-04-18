@@ -3,38 +3,50 @@ console.log("Extension CyberProtect injectée !");
 const currentDomain = window.location.hostname;
 console.log("currentDomain" + currentDomain);
 const DIX_JOURS_EN_MS = 10 * 24 * 60 * 60 * 1000;
+const defaultThreshold = 30;
+const redirectionUrl = 'https://www.youtube.com/embed/blar1yAMXWQ?autoplay=1&controls=0&rel=0&showinfo=0&modestbranding=1';
 
-chrome.storage.local.get(['blockedSites'], (result) => {
-  const blockedSites = result.blockedSites || {};
-  const blocage = blockedSites[currentDomain];
+  // On récupère la liste des sites bloqués à partir du Local Storage
+  // Si le site courant est bloqué on calcule le temps écoulé
+  // Si le blocage est encore actif on appelle la fonction Blocage()
+  // Sinon on supprime le blocage et on démarre l'analyse si le consentement a été donné
+  chrome.storage.local.get(['blockedSites'], (result) => {
+    const blockedSites = result.blockedSites || {};
+    const blocage = blockedSites[currentDomain];
 
-  if (blocage && blocage.timestamp) {
-    const tempsEcoule = Date.now() - blocage.timestamp;
-    const tempsRestant = DIX_JOURS_EN_MS - tempsEcoule;
+    if (blocage && blocage.timestamp) {
+      const tempsEcoule = Date.now() - blocage.timestamp;
+      const tempsRestant = DIX_JOURS_EN_MS - tempsEcoule;
 
-    if (tempsRestant > 0) {
-      const joursRestants = Math.ceil(tempsRestant / (24 * 60 * 60 * 1000));
-      Blocage(`Vous êtes bloqué sur ce site pour comportements toxiques répétés.<br><br>⏳ Temps restant : <strong>${joursRestants} jour(s)</strong>`, false);
+      if (tempsRestant > 0) {
+        const joursRestants = Math.ceil(tempsRestant / (24 * 60 * 60 * 1000));
+        Blocage(`Vous êtes bloqué sur ce site pour comportements toxiques répétés.<br><br>⏳ Temps restant : <strong>${joursRestants} jour(s)</strong>`, false);
+      } else {
+        delete blockedSites[currentDomain];
+        chrome.storage.local.set({ blockedSites });
+        toggleExtensionBasedOnConsent((isActive) => {
+          if (isActive) startInterval();
+        });
+      }
     } else {
-      delete blockedSites[currentDomain];
-      chrome.storage.local.set({ blockedSites });
       toggleExtensionBasedOnConsent((isActive) => {
         if (isActive) startInterval();
       });
     }
-  } else {
-    toggleExtensionBasedOnConsent((isActive) => {
-      if (isActive) startInterval();
-    });
-  }
-});
+  });
 
-let seuil = 30;
+// Définition du Seuil par défaut
+let seuil = defaultThreshold;
 
+// On récupère dans le Local Storage
+// consentGiven : si le consentement a été donné
+// toxicityThreshold : le degré de toxicité à atteindre pour être avertir
+// Si le consentement n'a pas été donné : l’extension est désactivée (pas de surveillance).
+// Sinon, elle démarre : la détection est régulière via startInterval().
 function toggleExtensionBasedOnConsent(callback) {
   chrome.storage.local.get(['consentGiven', 'toxicityThreshold'], function (result) {
     const consentGiven = result.consentGiven;
-    seuil = result.toxicityThreshold !== undefined ? result.toxicityThreshold : 30;
+    seuil = result.toxicityThreshold !== undefined ? result.toxicityThreshold : defaultThreshold;
     if (consentGiven === false || consentGiven === undefined) {
       console.log("L'extension est désactivée car consentGiven est défini sur false.");
       clearInterval(intervalId);
@@ -50,7 +62,11 @@ function toggleExtensionBasedOnConsent(callback) {
 }
 
 let intervalId = null;
+let allBloqued = false;
 
+// Concerne l'interval
+// Toutes les secondes : on récupère l’élément actuellement édité.
+// Si le texte a changé, l’analyse est relancée.
 function startInterval() {
   intervalId = setInterval(() => {
     if (!allBloqued) {
@@ -72,12 +88,15 @@ function startInterval() {
   }, 1000);
 }
 
+
 toggleExtensionBasedOnConsent((isActive) => {
   if (isActive) {
     startInterval();
   }
 });
 
+// Listener qui redémarre l’analyse ou met à jour le seuil 
+// si consentGiven ou toxicityThreshold changent
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === 'local') {
     if (changes.consentGiven && userBlocked == false) {
@@ -88,7 +107,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
       });
     }
     if (changes.toxicityThreshold) {
-      seuil = changes.toxicityThreshold.newValue !== undefined ? changes.toxicityThreshold.newValue : 30;
+      seuil = changes.toxicityThreshold.newValue !== undefined ? changes.toxicityThreshold.newValue : defaultThreshold;
       console.log("Le seuil de toxicité a été mis à jour :", seuil);
     }
   }
@@ -96,11 +115,11 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 
 let lastText = "";
 let enterBlocked = false;
-let allBloqued = false;
 let controller = new AbortController();
 let essais = 3;
 let lastEditableElement = null;
 
+//Fonction qui retourne l'élément actif
 function getActiveEditableElement() {
   const active = document.activeElement;
   if (active && active.isContentEditable) return active;
@@ -108,10 +127,14 @@ function getActiveEditableElement() {
   return null;
 }
 
+//Fonction qui bloque temporairement la touche Enter
 function blockEnterTemporarily() {
   enterBlocked = true;
 }
 
+// Listener :
+// Si un message est considéré toxique, Enter est bloqué.
+// Est réactivé quand l’utilisateur recommence à écrire.
 document.addEventListener("keydown", function (event) {
   if (!allBloqued) {
     if (event.key === "Enter" && enterBlocked) {
@@ -127,6 +150,7 @@ document.addEventListener("keydown", function (event) {
   }
 }, true);
 
+// Fonction qui simule des Backspace
 function simulateBackspaces(element, count) {
   element.focus();
   for (let i = 0; i < count; i++) {
@@ -142,12 +166,16 @@ function simulateBackspaces(element, count) {
   }
 }
 
+// Fonction qui :
+// Affiche un message si la toxicité dépasse le seuil.
+// Supprime le texte de manière visuelle après 4 secondes.
+// Gère le nombre de tentatives restantes (essais).
 function showWarningPopup(score) {
   const existing = document.querySelector("#cyber-popup");
   if (existing) existing.remove();
 
   allBloqued = true;
-  chrome.storage.local.set({ userBlocked: true });
+  //chrome.storage.local.set({ userBlocked: true }); // NE PEUT PAS FONCTIONNER
 
   const popup = document.createElement("div");
   popup.id = "cyber-popup";
@@ -241,7 +269,7 @@ function Blocage(message, activeVideo) {
       alreadyRedirected = true;
 
       const a = document.createElement('a');
-      a.href = 'https://www.youtube.com/embed/blar1yAMXWQ?autoplay=1&controls=0&rel=0&showinfo=0&modestbranding=1';
+      a.href = redirectionUrl;
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
       a.style.display = 'none';
