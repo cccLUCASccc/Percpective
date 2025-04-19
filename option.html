@@ -30,7 +30,7 @@
 </head>
 <body>
   <h2>🔐 Modifier le mot de passe Admin</h2>
-  <div id="old-password-section">
+  <div id="old-password-section" style:"display: none;">
     <label for="old-password">Ancien mot de passe :</label>
     <input type="password" id="old-password" />
     <button id="verify-old-password">Vérifier</button>
@@ -42,6 +42,9 @@
     <button id="save-password">Sauvegarder</button>
   </div>
 
-  <script src="options.js"></script>
+  <h2>🚫 Sites bloqués</h2>
+  <ul id="blocked-sites-list"></ul>
+
+  <script src="option.js"></script>
 </body>
 </html>

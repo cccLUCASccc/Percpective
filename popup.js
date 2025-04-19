@@ -1,4 +1,3 @@
-// Au chargement de la popup
 document.addEventListener("DOMContentLoaded", () => {
   chrome.storage.local.get(["consentGiven", "toxicityThreshold"], (result) => {
     if (typeof result.consentGiven !== "undefined") {
@@ -38,30 +37,6 @@ document.getElementById("config-form").addEventListener("submit", (event) => {
 document.getElementById("open-options").addEventListener("click", (event) => {
   event.preventDefault();
   chrome.runtime.openOptionsPage();
-});
-
-document.getElementById("block-extension").addEventListener("click", (event) => {
-  event.preventDefault();
-  const input = prompt("Mot de passe admin requis pour bloquer l'extension :");
-  verifyPassword(input, (isValid) => {
-    if (isValid) {
-      alert("Extension bloquée.");
-    } else {
-      alert("Mot de passe incorrect.");
-    }
-  });
-});
-
-document.getElementById("uninstall-extension").addEventListener("click", (event) => {
-  event.preventDefault();
-  const input = prompt("Mot de passe admin requis pour désinstaller l'extension :");
-  verifyPassword(input, (isValid) => {
-    if (isValid) {
-      alert("Extension désinstallée.");
-    } else {
-      alert("Mot de passe incorrect.");
-    }
-  });
 });
 
 function verifyPassword(inputPassword, callback) {
