@@ -93,25 +93,12 @@ function containsSpecial(str) {
 }
 //Soumission du mot de passe Administrateur
 document.getElementById("save-password").addEventListener("click", async () => {
+  const question = document.getElementById("secret-question").value.trim();
+  const answer = document.getElementById("secret-answer").value.trim();
   const newPass = document.getElementById("new-password").value;
   const confirmPass = document.getElementById("confirm-password").value;
-  if (newPass.length < 6) {
-    document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 6 caractères.";
-    return;
-  }
-
-  if (!containsUpperCase(newPass)){
-    document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 1 majuscule.";
-    return;
-  }
-
-  if (!containsLowerCase(newPass)){
-    document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 1 minuscule.";
-    return;
-  }
-
-  if (!containsSpecial(newPass)){
-    document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 1 caractère spécial.";
+  if (!question || !answer) {
+    document.getElementById("message").textContent = "⚠️ La question et la réponse secrètes doivent être renseignées.";
     return;
   }
 
@@ -120,16 +107,50 @@ document.getElementById("save-password").addEventListener("click", async () => {
     return;
   }
 
+  if (newPass.length < 6 || !containsUpperCase(newPass) || !containsLowerCase(newPass) || !containsSpecial(newPass)) {
+    document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 6 caractères, dont 1 majuscule, 1 minuscule et 1 caractère spécial.";
+    return;
+  }
+
+  // if (newPass.length < 6 ) {
+  //   document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 6 caractères.";
+  //   return;
+  // }
+
+  // if (!containsUpperCase(newPass)) {
+  //   document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 1 majuscule.";
+  //   return;
+  // }
+
+  // if (!containsLowerCase(newPass)) {
+  //   document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 1 minuscule.";
+  //   return;
+  // }
+
+  // if (!containsSpecial(newPass)) {
+  //   document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 1 caractère spécial.";
+  //   return;
+  // }
+
   const hash = await hashPassword(newPass);
+  const answerHash = await hashPassword(answer);
+
   document.getElementById("setParams").style.display = "block";
   document.getElementById("getRightToAccess").style.display = "none";
   document.getElementById("createPassword").style.display = "none";
   document.getElementById("blockedSites").style.display = "none";
 
-  chrome.storage.sync.set({ adminPasswordHash: hash }, () => {
-    alert("✅ Mot de passe sauvegardé avec succès !");
+  chrome.storage.sync.set({
+    adminPasswordHash: hash,
+    secretQuestion: question,
+    secretAnswerHash: answerHash,
+    isAuthenticated: true
+  }, () => {
+    alert("✅ Mot de passe et question secrète sauvegardés avec succès !");
     document.getElementById("new-password").value = "";
     document.getElementById("confirm-password").value = "";
+    document.getElementById("secret-question").value = "";
+    document.getElementById("secret-answer").value = "";
     try {
       chrome.storage.sync.remove("openParameters");
     } catch (error) {
@@ -194,7 +215,7 @@ document.getElementById("add-blocked-site-btn").addEventListener("click", () => 
 
   chrome.storage.sync.get(['blockedSites'], (result) => {
     const blockedSites = result.blockedSites || {};
-    
+
     // Ajouter le nouveau site à la liste des sites bloqués avec un timestamp
     blockedSites[newSite] = { timestamp: Date.now() };
 
@@ -278,5 +299,34 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 document.getElementById('open-readme').addEventListener('click', () => {
   chrome.tabs.create({
     url: chrome.runtime.getURL('readme.html') // ou 'readme.md' si tu veux le brut
+  });
+});
+
+// Récupération du mot de passe via la question secrète
+document.getElementById("recover-password-link").addEventListener("click", () => {
+  chrome.storage.sync.get(["secretQuestion"], (data) => {
+    const question = data.secretQuestion;
+    if (question) {
+      document.getElementById("recovery-question").textContent = question;
+      document.getElementById("recovery-section").style.display = "block";
+    } else {
+      alert("⚠️ Aucune question secrète n'a été définie.");
+    }
+  });
+});
+
+document.getElementById("submit-recovery-answer").addEventListener("click", async () => {
+  const answer = document.getElementById("recovery-answer").value.trim();
+  const answerHash = await hashPassword(answer);
+
+  chrome.storage.sync.get(["secretAnswerHash"], (data) => {
+    if (data.secretAnswerHash === answerHash) {
+      alert("✅ Réponse correcte ! Vous pouvez maintenant modifier le mot de passe.");
+      // Rediriger vers l'écran de modification du mot de passe
+      document.getElementById("createPassword").style.display = "block";
+      document.getElementById("getRightToAccess").style.display = "none";
+    } else {
+      alert("⚠️ Réponse incorrecte. Veuillez réessayer.");
+    }
   });
 });
