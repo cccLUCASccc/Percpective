@@ -38,14 +38,10 @@
 			"run_at": "document_idle"
 		}
 	],
-<<<<<<< HEAD
 	"web_accessible_resources": [
 		{
 			"resources": ["README.md"],
 			"matches": ["<all_urls>"]
 		}
 	]
-=======
-	"incognito": "spanning"
->>>>>>> 5cdade289f2da18c9c97b03d7b3e0e2c4f6f3814
 }
