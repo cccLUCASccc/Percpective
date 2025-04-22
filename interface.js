@@ -29,6 +29,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           document.getElementById("getRightToAccess").style.display = "none";
           document.getElementById("createPassword").style.display = "none";
           document.getElementById("blockedSites").style.display = "none";
+
+
         }
       })
     } else {
@@ -83,7 +85,6 @@ document.getElementById("saveConsentAndSeuil").addEventListener("click", () => {
 document.getElementById("save-password").addEventListener("click", async () => {
   const newPass = document.getElementById("new-password").value;
   const confirmPass = document.getElementById("confirm-password").value;
-
   if (newPass.length < 4) {
     document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 4 caractères.";
     return;
@@ -95,6 +96,10 @@ document.getElementById("save-password").addEventListener("click", async () => {
   }
 
   const hash = await hashPassword(newPass);
+  document.getElementById("setParams").style.display = "block";
+  document.getElementById("getRightToAccess").style.display = "none";
+  document.getElementById("createPassword").style.display = "none";
+  document.getElementById("blockedSites").style.display = "none";
 
   chrome.storage.local.set({ adminPasswordHash: hash }, () => {
     alert("✅ Mot de passe sauvegardé avec succès !");
@@ -105,14 +110,16 @@ document.getElementById("save-password").addEventListener("click", async () => {
     } catch (error) {
       console.error("Erreur lors de la suppression de openParameters :", error);
     }
-    logoutUser();
   });
 });
 
 //Annulation du changement de mot de passe Administrateur
 document.getElementById("cancel-password").addEventListener("click", async () => {
   chrome.storage.local.remove("openParameters");
-  window.close();
+  document.getElementById("setParams").style.display = "block";
+  document.getElementById("getRightToAccess").style.display = "none";
+  document.getElementById("createPassword").style.display = "none";
+  document.getElementById("blockedSites").style.display = "none";
 });
 
 function loadBlockedSites() {
@@ -139,7 +146,7 @@ function loadBlockedSites() {
         btn.addEventListener("click", () => {
           delete sitesObj[site];
           chrome.storage.local.set({ blockedSites: sitesObj }, () => {
-            loadBlockedSites(); // recharge la liste après suppression
+            loadBlockedSites();
           });
         });
 
@@ -170,7 +177,11 @@ document.getElementById("submit").addEventListener("click", async () => {
     await chrome.storage.local.set({ isAuthenticated: true });
     // Programmer la suppression du droit d'accès (voir background.js)
     chrome.runtime.sendMessage({ action: "startTimer" });
-    window.close();
+    document.getElementById("setParams").style.display = "block";
+    document.getElementById("getRightToAccess").style.display = "none";
+    document.getElementById("createPassword").style.display = "none";
+    document.getElementById("blockedSites").style.display = "none";
+
   } else if (password.length === 0) {
     document.getElementById("message2").textContent = "⚠️ Veuillez saisir un mot de passe.";
   } else {
