@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Options CyberProtect</title>
+		<style>
+			body {
+				font-family: "Segoe UI", sans-serif;
+				background-color: #0c0c0c;
+				color: #cee4cc;
+				padding: 0px 10px 10px 10px;
+				min-width: 370px;
+			}
+
+			input {
+				padding: 8px;
+				margin: 8px 0;
+				width: 95%;
+				border-radius: 4px;
+				border: 1px solid #ccc;
+				background-color: #1c1c1c;
+				color: #fff;
+			}
+
+			button {
+				padding: 10px;
+				background-color: #0df024;
+				color: #0c0c0c;
+				border: none;
+				border-radius: 6px;
+				cursor: pointer;
+				margin-top: 14px;
+			}
+
+			button:hover {
+				background-color: #0bbf1c;
+			}
+
+			#header {
+				display: flex;
+				align-items: center;
+				gap: 13px;
+				margin-top: 15px;
+				border-bottom: 1px solid #ccc;
+				padding-bottom: 8px;
+			}
+
+			#header h1 {
+				font-size: 16px;
+				margin-bottom: 15px;
+				font-weight: bold;
+				color: #ffffff;
+			}
+
+			#header small {
+				font-size: 12px;
+				color: #aaaaaa;
+				margin-bottom: 4px;
+				margin-left: auto; /* Pousse la version à droite */
+			}
+
+			h2 {
+				text-align: center;
+				margin-top: 5px;
+				margin-bottom: 5px;
+			}
+
+			#createPassword h2,
+			#getRightToAccess h2,
+			#blockedSites h2 {
+				text-align: left;
+				margin-top: 15px;
+				margin-bottom: 15px;
+			}
+
+			input[type="checkbox"] {
+				margin-top: 10px;
+				transform: scale(1.2);
+				accent-color: #0df024;
+				cursor: pointer;
+			}
+
+			input[type="range"] {
+				width: 320px;
+				margin-top: 2px;
+				margin-bottom: 0px;
+				accent-color: #0df024;
+				cursor: pointer;
+			}
+
+			.checkbox-container {
+				display: grid;
+				grid-template-columns: auto 1fr;
+				gap: 10px;
+				align-items: start;
+				font-size: 14px;
+				margin-bottom: 5px;
+			}
+
+			.checkbox-container input[type="checkbox"] {
+				transform: scale(1.2);
+				accent-color: #0df024;
+				margin-top: 5px;
+			}
+
+			.checkbox-container label {
+				line-height: 1.5;
+				cursor: pointer;
+			}
+
+			.range-container {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				gap: 0px;
+			}
+
+			#threshold-value {
+				font-weight: bold;
+				text-align: right;
+				font-size: 13px;
+				color: #0df024;
+				margin-bottom: 1px;
+			}
+
+			#toxicityThreshold {
+				padding-left: 0px;
+				padding-right: 0px;
+			}
+
+			.disclaimer {
+				font-size: 11px;
+				margin-top: 18px;
+				margin-bottom: 0px;
+				color: #a2a2a2;
+				line-height: 1.4;
+			}
+
+			.submit {
+				display: block;
+				width: 100%;
+				background-color: #0df024;
+				color: #0c0c0c;
+				border: none;
+				border-radius: 6px;
+				font-size: 14px;
+				font-weight: bold;
+				cursor: pointer;
+				transition: background-color 0.3s ease;
+				text-align: center;
+			}
+
+			label {
+				display: flex;
+				flex-direction: column;
+				font-size: 14px;
+				margin-bottom: 16px;
+			}
+
+			#new-password-section label {
+				margin-bottom: 0px;
+			}
+
+			form {
+				display: flex;
+				flex-direction: column;
+			}
+
+			p {
+				font-size: 14px;
+				margin-bottom: 16px;
+				line-height: 1.5;
+			}
+
+			ul {
+				list-style-type: none;
+				padding: 0;
+			}
+
+			li button {
+				margin-left: 10px;
+				padding: 5px 10px;
+				font-size: 12px;
+			}
+
+			#buttonsGroup,
+			#buttonsGroup2 {
+				display: flex;
+				justify-content: space-between;
+				width: 100%;
+				gap: 5px;
+			}
+			#buttonsGroup button,
+			#buttonsGroup2 button {
+				flex: 1;
+			}
+
+			#submit {
+				text-align: center;
+				width: 100%;
+			}
+
+			#sites {
+				padding-top: 15px;
+				padding-bottom: 0px;
+				margin-bottom: 0px;
+				border-top: 1px solid #ccc;
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<div id="header">
+				<img
+					src="icons/icon_48.png"
+					alt="CyberProtect Logo"
+					width="32"
+					height="32"
+				/>
+				<h1>CyberProtect</h1>
+				<small id="appVersion"></small>
+			</div>
+
+			<div id="createPassword" style="display: none">
+				<h2 id="titleChangePassword"></h2>
+
+				<div id="new-password-section" style="display: block">
+					<label for="new-password">Mot de passe :</label>
+					<input type="password" id="new-password" />
+					<label for="confirm-password">Confirmation :</label>
+					<input type="password" id="confirm-password" />
+
+					<div id="buttonsGroup2">
+						<button id="save-password">Sauvegarder</button>
+						<button id="cancel-password">Annuler</button>
+					</div>
+					<p id="message" style="color: red"></p>
+				</div>
+			</div>
+
+			<div id="getRightToAccess" style="display: none">
+				<h2 id="title">Connexion</h2>
+				<input type="password" id="password" placeholder="Mot de passe" />
+				<button id="submit">Valider</button>
+				<p id="message2" style="color: red"></p>
+			</div>
+
+			<div id="setParams" style="display: none">
+				<h2>Votre bouclier contre le cyberharcèlement</h2>
+				<form id="config-form">
+					<p>
+						⚠️ Cette extension analyse les messages visibles sur Messenger afin
+						d’identifier des contenus potentiellement inappropriés, à l’aide de
+						l’API Perspective développée par Google. Aucune donnée personnelle
+						n’est stockée ou partagée à des fins commerciales.
+					</p>
+
+					<div class="checkbox-container">
+						<input type="checkbox" id="consentGiven" name="consentGiven" />
+						<label for="consentGiven">
+							Je consens à ce que mes messages soient analysés localement, et
+							temporairement transmis à l’API Perspective dans le seul but
+							d’évaluer leur niveau de toxicité.
+						</label>
+					</div>
+
+					<label>
+						Définir le seuil de toxicité (% de sensibilité à l’alerte) :
+						<div class="range-container">
+							<input
+								type="range"
+								id="toxicityThreshold"
+								min="0"
+								max="100"
+								value="50"
+							/>
+							<span id="threshold-value">50%</span>
+						</div>
+					</label>
+
+					<button class="submit" id="saveConsentAndSeuil">Sauvegarder</button>
+					<div id="buttonsGroup">
+						<button id="open-options">⚙️ Paramètres</button>
+						<button id="logout">⏏ Déconnexion</button>
+					</div>
+
+					<p class="disclaimer">
+						Cette extension est fournie à titre préventif. Son auteur ne saurait
+						être tenu responsable des conséquences liées à son utilisation, son
+						fonctionnement ou ses éventuelles détections.
+					</p>
+				</form>
+			</div>
+
+			<div id="changePassword" style="display: none"></div>
+		</div>
+
+		<div id="blockedSites">
+			<h2 id="sites">🚫 Sites bloqués</h2>
+			<ul id="blocked-sites-list"></ul>
+		</div>
+
+		<script src="interface.js"></script>
+	</body>
+</html>

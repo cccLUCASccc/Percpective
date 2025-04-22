@@ -4,9 +4,9 @@
 
   // Garde fou complémentaire au manifest pour être certain que l'extension ne s'exécute pas sur des sites autres
   // que ceux définis ci-dessous
-  const authorizedDomains = ["instagram.com", "facebook.com", "twitter.com",
+  const authorizedDomains = ["instagram.com", "facebook.com", "x.com",
     "messenger.com", "snapchat.com", "telegram.org", "whatsapp.com",
-    "tiktok.com"];
+    "tiktok.com", "discord.com"];
   const currentDomain = window.location.hostname;
 
   if (!currentDomain || !authorizedDomains.some(domain => currentDomain.includes(domain))) {
@@ -214,7 +214,7 @@
       Il va être supprimé car il pourrait être interprété comme une forme de cyberharcèlement.
     </p>
     <p style="margin: 4px 0;">
-      Il vous reste <strong>${essais}</strong> tentative(s) avant blocage.
+      Il vous reste <strong>${essais}</strong> tentative${essais > 1 ? `s` : ``} avant blocage.
     </p>
   `;
 
@@ -233,7 +233,7 @@
           lastText = "";
         }
       }
-    }, 4000);
+    }, 6000);
   }
 
   // Fonction qui :
