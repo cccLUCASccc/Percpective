@@ -255,7 +255,7 @@
 				<h2>Votre bouclier contre le cyberharcèlement</h2>
 				<form id="config-form">
 					<p>
-						⚠️ Cette extension analyse les messages visibles sur Messenger afin
+						⚠️ Cette extension analyse les messages visibles sur les réseaux sociaux afin
 						d’identifier des contenus potentiellement inappropriés, à l’aide de
 						l’API Perspective développée par Google. Aucune donnée personnelle
 						n’est stockée ou partagée à des fins commerciales.
@@ -304,6 +304,10 @@
 		<div id="blockedSites">
 			<h2 id="sites">🚫 Sites bloqués</h2>
 			<ul id="blocked-sites-list"></ul>
+			<div id="add-site-form" style="margin-top: 10px;">
+				<input type="text" id="new-blocked-site" placeholder="Ajouter un site (ex: www.exemple.com)" />
+				<button id="add-blocked-site-btn">Ajouter</button>
+			</div>					  
 		</div>
 
 		<script src="interface.js"></script>

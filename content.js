@@ -24,7 +24,7 @@
   // Si le site courant est bloqué on calcule le temps écoulé
   // Si le blocage est encore actif on appelle la fonction Blocage()
   // Sinon on supprime le blocage et on démarre l'analyse si le consentement a été donné
-  chrome.storage.local.get(['blockedSites'], (result) => {
+  chrome.storage.sync.get(['blockedSites'], (result) => {
     const blockedSites = result.blockedSites || {};
     const blocage = blockedSites[currentDomain];
 
@@ -37,7 +37,7 @@
         Blocage(`Vous êtes bloqué sur ce site pour comportements toxiques répétés.<br><br>⏳ Temps restant : <strong>${joursRestants} jour(s)</strong>`, false);
       } else {
         delete blockedSites[currentDomain];
-        chrome.storage.local.set({ blockedSites });
+        chrome.storage.sync.set({ blockedSites });
         toggleExtensionBasedOnConsent((isActive) => {
           if (isActive) startInterval();
         });
@@ -58,7 +58,7 @@
   // Si le consentement n'a pas été donné : l’extension est désactivée (pas de surveillance).
   // Sinon, elle démarre : la détection est régulière via startInterval().
   function toggleExtensionBasedOnConsent(callback) {
-    chrome.storage.local.get(['consentGiven', 'toxicityThreshold'], function (result) {
+    chrome.storage.sync.get(['consentGiven', 'toxicityThreshold'], function (result) {
       const consentGiven = result.consentGiven;
       seuil = result.toxicityThreshold !== undefined ? result.toxicityThreshold : defaultThreshold;
       if (consentGiven === false || consentGiven === undefined) {
@@ -269,12 +269,12 @@
     const currentDomain = window.location.hostname;
     const blockTimestamp = Date.now();
 
-    chrome.storage.local.get(['blockedSites'], (result) => {
+    chrome.storage.sync.get(['blockedSites'], (result) => {
       const blockedSites = result.blockedSites || {};
       blockedSites[currentDomain] = {
         timestamp: blockTimestamp
       };
-      chrome.storage.local.set({ blockedSites });
+      chrome.storage.sync.set({ blockedSites });
     });
 
     allBloqued = true;
