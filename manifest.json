@@ -13,7 +13,8 @@
 		"https://web.telegram.org/*",
 		"https://web.whatsapp.com/*",
 		"https://www.tiktok.com/*",
-		"https://discord.com/*"
+		"https://discord.com/*",
+		"https://www.google.be/*"
 	],
 	"icons": {
 		"16": "icons/icon_16.png",

@@ -4,15 +4,15 @@
 
   // Garde fou complémentaire au manifest pour être certain que l'extension ne s'exécute pas sur des sites autres
   // que ceux définis ci-dessous
-  const authorizedDomains = ["instagram.com", "facebook.com", "x.com",
-    "messenger.com", "snapchat.com", "telegram.org", "whatsapp.com",
-    "tiktok.com", "discord.com"];
-  const currentDomain = window.location.hostname;
+  // const authorizedDomains = ["instagram.com", "facebook.com", "x.com",
+  //   "messenger.com", "snapchat.com", "telegram.org", "whatsapp.com",
+  //   "tiktok.com", "discord.com"];
+  // const currentDomain = window.location.hostname;
 
-  if (!currentDomain || !authorizedDomains.some(domain => currentDomain.includes(domain))) {
-    // console.log("CyberProtect : domaine non autorisé ou vide. Arrêt du script.");
-    return;
-  }
+  // if (!currentDomain || !authorizedDomains.some(domain => currentDomain.includes(domain))) {
+  //   // console.log("CyberProtect : domaine non autorisé ou vide. Arrêt du script.");
+  //   return;
+  // }
 
   // console.log("CyberProtect inspecte le domaine : " + currentDomain);
 
