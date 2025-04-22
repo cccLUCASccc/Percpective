@@ -1,6 +1,6 @@
 (function () {
 
-  console.log("Extension CyberProtect injectée !");
+  // console.log("Extension CyberProtect injectée !");
 
   // Garde fou complémentaire au manifest pour être certain que l'extension ne s'exécute pas sur des sites autres
   // que ceux définis ci-dessous
@@ -10,11 +10,11 @@
   const currentDomain = window.location.hostname;
 
   if (!currentDomain || !authorizedDomains.some(domain => currentDomain.includes(domain))) {
-    console.log("CyberProtect : domaine non autorisé ou vide. Arrêt du script.");
+    // console.log("CyberProtect : domaine non autorisé ou vide. Arrêt du script.");
     return;
   }
 
-  console.log("CyberProtect inspecte le domaine : " + currentDomain);
+  // console.log("CyberProtect inspecte le domaine : " + currentDomain);
 
   const DIX_JOURS_EN_MS = 10 * 24 * 60 * 60 * 1000;
   const defaultThreshold = 30;
@@ -62,11 +62,11 @@
       const consentGiven = result.consentGiven;
       seuil = result.toxicityThreshold !== undefined ? result.toxicityThreshold : defaultThreshold;
       if (consentGiven === false || consentGiven === undefined) {
-        console.log("L'extension est désactivée car consentGiven est défini sur false.");
+        // console.log("L'extension est désactivée car consentGiven est défini sur false.");
         clearInterval(intervalId);
         callback(false);
       } else {
-        console.log("L'extension est activée.");
+        // console.log("L'extension est activée.");
         if (!intervalId) {
           startInterval();
         }
@@ -91,7 +91,7 @@
 
         const currentText = editable.innerText || editable.value || "";
         if (currentText.trim() !== lastText) {
-          console.log("📝 Nouveau message détecté :", currentText.trim());
+          // console.log("📝 Nouveau message détecté :", currentText.trim());
           lastText = currentText.trim();
 
           if (currentText.trim().length > 2) {
@@ -122,7 +122,7 @@
       }
       if (changes.toxicityThreshold) {
         seuil = changes.toxicityThreshold.newValue !== undefined ? changes.toxicityThreshold.newValue : defaultThreshold;
-        console.log("Le seuil de toxicité a été mis à jour :", seuil);
+        // console.log("Le seuil de toxicité a été mis à jour :", seuil);
       }
     }
   });
@@ -154,7 +154,7 @@
       if (event.key === "Enter" && enterBlocked) {
         event.preventDefault();
         event.stopPropagation();
-        console.log("⛔ Touche Enter bloquée après détection d'un message toxique !");
+        // console.log("⛔ Touche Enter bloquée après détection d'un message toxique !");
       } else if (event.key !== "Enter") {
         enterBlocked = false;
       }
@@ -323,7 +323,7 @@
       const toxicityScore = result.attributeScores?.TOXICITY?.summaryScore?.value;
 
       if (toxicityScore !== undefined) {
-        console.log(`Toxicité détectée : ${toxicityScore * 100}%`);
+        // console.log(`Toxicité détectée : ${toxicityScore * 100}%`);
         if (toxicityScore > seuil / 100) {
           blockEnterTemporarily();
           --essais;
