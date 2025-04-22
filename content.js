@@ -1,19 +1,5 @@
 (function () {
 
-  // console.log("Extension CyberProtect injectée !");
-
-  // Garde fou complémentaire au manifest pour être certain que l'extension ne s'exécute pas sur des sites autres
-  // que ceux définis ci-dessous
-  const authorizedDomains = ["instagram.com", "facebook.com", "x.com",
-    "messenger.com", "snapchat.com", "telegram.org", "whatsapp.com",
-    "tiktok.com", "discord.com"];
-  const currentDomain = window.location.hostname;
-
-  if (!currentDomain || !authorizedDomains.some(domain => currentDomain.includes(domain))) {
-    // console.log("CyberProtect : domaine non autorisé ou vide. Arrêt du script.");
-    return;
-  }
-
   // console.log("CyberProtect inspecte le domaine : " + currentDomain);
 
   const DIX_JOURS_EN_MS = 10 * 24 * 60 * 60 * 1000;
@@ -255,6 +241,7 @@
     blocage.style.justifyContent = 'center';
     blocage.style.alignItems = 'center';
     blocage.style.fontSize = '1.5rem';
+    blocage.style.fontFamily = 'Arial, sans-serif'
     blocage.style.textAlign = 'center';
     blocage.style.padding = '20px';
     blocage.style.zIndex = '9999';

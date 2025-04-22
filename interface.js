@@ -84,6 +84,7 @@ document.getElementById("saveConsentAndSeuil").addEventListener("click", () => {
 function containsUpperCase(str) {
   return /[A-Z]/.test(str);
 }
+
 function containsLowerCase(str) {
   return /[a-z]/.test(str);
 }
