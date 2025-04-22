@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   loadBlockedSites();
 
-  chrome.storage.local.get(["consentGiven", "toxicityThreshold"], (result) => {
+  chrome.storage.sync.get(["consentGiven", "toxicityThreshold"], (result) => {
     if (typeof result.consentGiven !== "undefined") {
       document.getElementById("consentGiven").checked = result.consentGiven;
     }
@@ -14,9 +14,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  chrome.storage.local.get("isAuthenticated", (authResult) => {
+  chrome.storage.sync.get("isAuthenticated", (authResult) => {
     if (authResult.isAuthenticated) {
-      chrome.storage.local.get("openParameters", (param) => {
+      chrome.storage.sync.get("openParameters", (param) => {
         if (param.openParameters === true) {
           // Ouverture des Paramètres
           document.getElementById("setParams").style.display = "none";
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("blockedSites").style.display = "none";
 
       // Vérifie uniquement si le mot de passe administrateur existe
-      chrome.storage.local.get("adminPasswordHash", (passwordResult) => {
+      chrome.storage.sync.get("adminPasswordHash", (passwordResult) => {
         document.getElementById("setParams").style.display = "none";
         document.getElementById("blockedSites").style.display = "none";
         if (passwordResult.adminPasswordHash) {
@@ -70,7 +70,7 @@ document.getElementById("saveConsentAndSeuil").addEventListener("click", () => {
   const consentGiven = document.getElementById("consentGiven").checked;
   const toxicityThreshold = document.getElementById("toxicityThreshold").value;
 
-  chrome.storage.local.set(
+  chrome.storage.sync.set(
     {
       consentGiven: consentGiven,
       toxicityThreshold: toxicityThreshold
@@ -101,12 +101,12 @@ document.getElementById("save-password").addEventListener("click", async () => {
   document.getElementById("createPassword").style.display = "none";
   document.getElementById("blockedSites").style.display = "none";
 
-  chrome.storage.local.set({ adminPasswordHash: hash }, () => {
+  chrome.storage.sync.set({ adminPasswordHash: hash }, () => {
     alert("✅ Mot de passe sauvegardé avec succès !");
     document.getElementById("new-password").value = "";
     document.getElementById("confirm-password").value = "";
     try {
-      chrome.storage.local.remove("openParameters");
+      chrome.storage.sync.remove("openParameters");
     } catch (error) {
       console.error("Erreur lors de la suppression de openParameters :", error);
     }
@@ -115,7 +115,7 @@ document.getElementById("save-password").addEventListener("click", async () => {
 
 //Annulation du changement de mot de passe Administrateur
 document.getElementById("cancel-password").addEventListener("click", async () => {
-  chrome.storage.local.remove("openParameters");
+  chrome.storage.sync.remove("openParameters");
   document.getElementById("setParams").style.display = "block";
   document.getElementById("getRightToAccess").style.display = "none";
   document.getElementById("createPassword").style.display = "none";
@@ -123,7 +123,7 @@ document.getElementById("cancel-password").addEventListener("click", async () =>
 });
 
 function loadBlockedSites() {
-  chrome.storage.local.get("blockedSites", (data) => {
+  chrome.storage.sync.get("blockedSites", (data) => {
     const sitesObj = data.blockedSites || {};
     const list = document.getElementById("blocked-sites-list");
     list.innerHTML = "";
@@ -145,7 +145,7 @@ function loadBlockedSites() {
         btn.textContent = "Débloquer";
         btn.addEventListener("click", () => {
           delete sitesObj[site];
-          chrome.storage.local.set({ blockedSites: sitesObj }, () => {
+          chrome.storage.sync.set({ blockedSites: sitesObj }, () => {
             loadBlockedSites();
           });
         });
@@ -156,6 +156,30 @@ function loadBlockedSites() {
     }
   });
 }
+
+document.getElementById("add-blocked-site-btn").addEventListener("click", () => {
+  const input = document.getElementById("new-blocked-site");
+  const newSite = input.value.trim();
+  const domainRegex = /^(?!:\/\/)([a-zA-Z0-9-_]+\.)+[a-zA-Z]{2,11}?$/;
+
+  if (!domainRegex.test(newSite)) {
+    alert("⚠️ Veuillez entrer un domaine valide (ex: example.com)");
+    return;
+  }
+
+  chrome.storage.sync.get(['blockedSites'], (result) => {
+    const blockedSites = result.blockedSites || {};
+    
+    // Ajouter le nouveau site à la liste des sites bloqués avec un timestamp
+    blockedSites[newSite] = { timestamp: Date.now() };
+
+    chrome.storage.sync.set({ blockedSites }, () => {
+      loadBlockedSites();  // Mettre à jour la liste après l'ajout
+      input.value = "";  // Effacer le champ de texte
+    });
+  });
+});
+
 
 
 async function hashPassword(password) {
@@ -171,10 +195,10 @@ async function hashPassword(password) {
 // Vérification du mot de passe saisi au login
 document.getElementById("submit").addEventListener("click", async () => {
   const password = document.getElementById("password").value;
-  const storage = await chrome.storage.local.get("adminPasswordHash");
+  const storage = await chrome.storage.sync.get("adminPasswordHash");
   const inputHash = await hashPassword(password);
   if (inputHash === storage.adminPasswordHash) {
-    await chrome.storage.local.set({ isAuthenticated: true });
+    await chrome.storage.sync.set({ isAuthenticated: true });
     // Programmer la suppression du droit d'accès (voir background.js)
     chrome.runtime.sendMessage({ action: "startTimer" });
     document.getElementById("setParams").style.display = "block";
@@ -196,7 +220,7 @@ document.getElementById("logout").addEventListener("click", logoutUser);
 // Fonction pour déconnecter l'Administrateur
 async function logoutUser() {
   try {
-    await chrome.storage.local.remove("isAuthenticated");
+    await chrome.storage.sync.remove("isAuthenticated");
     //alert("Vous êtes déconnecté(e)!");
     window.close();
   } catch (error) {
@@ -205,10 +229,10 @@ async function logoutUser() {
 }
 
 document.getElementById("open-options").addEventListener("click", async () => {
-  await chrome.storage.local.set({ openParameters: true });
+  await chrome.storage.sync.set({ openParameters: true });
 });
 
-chrome.storage.local.get("openParameters", (param) => {
+chrome.storage.sync.get("openParameters", (param) => {
   if (param.openParameters !== undefined && param.openParameters === true) {
     document.getElementById("titleChangePassword").textContent = "Modification du mot de passe Admin";
     document.getElementById("cancel-password").style.display = "block";

@@ -3,8 +3,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     setTimeout(() => {
       (async () => {
         // Nettoyage des données d'auth
-        await chrome.storage.local.remove("isAuthenticated");
-        await chrome.storage.local.remove("openParameters");
+        await chrome.storage.sync.remove("isAuthenticated");
+        await chrome.storage.sync.remove("openParameters");
 
         // Notification
         chrome.notifications.create({
