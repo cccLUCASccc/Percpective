@@ -43,5 +43,6 @@
 			"resources": ["README.md"],
 			"matches": ["<all_urls>"]
 		}
-	]
+	],
+	"incognito": "spanning"
 }

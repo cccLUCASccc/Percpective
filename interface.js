@@ -81,12 +81,37 @@ document.getElementById("saveConsentAndSeuil").addEventListener("click", () => {
   );
 });
 
+function containsUpperCase(str) {
+  return /[A-Z]/.test(str);
+}
+function containsLowerCase(str) {
+  return /[a-z]/.test(str);
+}
+
+function containsSpecial(str) {
+  return /[-&@#§!%£*$=+~?\/\\]/.test(str);
+}
 //Soumission du mot de passe Administrateur
 document.getElementById("save-password").addEventListener("click", async () => {
   const newPass = document.getElementById("new-password").value;
   const confirmPass = document.getElementById("confirm-password").value;
-  if (newPass.length < 4) {
-    document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 4 caractères.";
+  if (newPass.length < 6) {
+    document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 6 caractères.";
+    return;
+  }
+
+  if (!containsUpperCase(newPass)){
+    document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 1 majuscule.";
+    return;
+  }
+
+  if (!containsLowerCase(newPass)){
+    document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 1 minuscule.";
+    return;
+  }
+
+  if (!containsSpecial(newPass)){
+    document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 1 caractère spécial.";
     return;
   }
 
