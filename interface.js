@@ -213,3 +213,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     window.close();
   }
 });
+
+// Ouvre le fichier README.md converti en html
+document.getElementById('open-readme').addEventListener('click', () => {
+  chrome.tabs.create({
+    url: chrome.runtime.getURL('readme.html') // ou 'readme.md' si tu veux le brut
+  });
+});
