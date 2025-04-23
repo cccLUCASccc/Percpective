@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   loadBlockedSites();
 
+ 
   chrome.storage.sync.get(["consentGiven", "toxicityThreshold"], (result) => {
     if (typeof result.consentGiven !== "undefined") {
       document.getElementById("consentGiven").checked = result.consentGiven;
@@ -113,25 +114,7 @@ document.getElementById("save-password").addEventListener("click", async () => {
     return;
   }
 
-  if (newPass.length < 6 ) {
-    document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 6 caractères.";
-    return;
-  }
-
-  if (!containsUpperCase(newPass)) {
-    document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 1 majuscule.";
-    return;
-  }
-
-  if (!containsLowerCase(newPass)) {
-    document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 1 minuscule.";
-    return;
-  }
-
-  if (!containsSpecial(newPass)) {
-    document.getElementById("message").textContent = "⚠️ Le mot de passe doit contenir au moins 1 caractère spécial.";
-    return;
-  }
+ 
 
   const hash = await hashPassword(newPass);
   const answerHash = await hashPassword(answer);
@@ -313,7 +296,7 @@ document.getElementById("recover-password-link").addEventListener("click", () =>
   chrome.storage.sync.get(["secretQuestion"], (data) => {
     const question = data.secretQuestion;
     if (question) {
-      document.getElementById("recovery-question").textContent = question;
+      // document.getElementById("recovery-question").textContent = question;
       document.getElementById("recovery-section").style.display = "block";
     } else {
       alert("⚠️ Aucune question secrète n'a été définie.");
