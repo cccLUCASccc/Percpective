@@ -160,18 +160,30 @@
   // Fonction qui simule des Backspace
   function simulateBackspaces(element, count) {
     element.focus();
+  
     for (let i = 0; i < count; i++) {
-      const event = new KeyboardEvent('keydown', {
-        key: 'Backspace',
-        code: 'Backspace',
-        keyCode: 8,
-        which: 8,
-        bubbles: true,
-        cancelable: true
+      // Dispatch full key lifecycle
+      ['keydown', 'keypress', 'keyup'].forEach(type => {
+        const event = new KeyboardEvent(type, {
+          key: 'Backspace',
+          code: 'Backspace',
+          keyCode: 8,
+          which: 8,
+          bubbles: true,
+          cancelable: true
+        });
+        element.dispatchEvent(event);
       });
-      element.dispatchEvent(event);
+  
+      // Optionnel mais souvent nécessaire : modifier le texte manuellement
+      if (element.value !== undefined) {
+        element.value = element.value.slice(0, -1); // Pour les <input> ou <textarea>
+      } else if (element.textContent !== undefined) {
+        element.textContent = element.textContent.slice(0, -1); // Pour les <div contenteditable>
+      }
     }
   }
+  
 
   // Fonction qui :
   // Affiche un message si la toxicité dépasse le seuil.

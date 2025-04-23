@@ -4,17 +4,7 @@
 	"version": "1.2",
 	"description": "D\u00e9tecte et traite automatiquement les messages \u00e0 caract\u00e8re toxique sortants sur les reseaux sociaux. Blocage de site personnalisé.",
 	"permissions": ["storage", "notifications", "activeTab", "scripting"],
-	"host_permissions": [
-		"https://www.instagram.com/*",
-		"https://www.facebook.com/*",
-		"https://x.com/*",
-		"https://www.messenger.com/*",
-		"https://www.snapchat.com/*",
-		"https://web.telegram.org/*",
-		"https://web.whatsapp.com/*",
-		"https://www.tiktok.com/*",
-		"https://discord.com/*"	
-		],
+	
 	"icons": {
 		"16": "icons/icon_16.png",
 		"48": "icons/icon_48.png",
