@@ -215,6 +215,7 @@
 
     setTimeout(() => {
       if (document.querySelector("#cyber-popup")) {
+
         allBloqued = false;
         popup.remove();
         if (lastEditableElement) {
