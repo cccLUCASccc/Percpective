@@ -168,6 +168,11 @@ document.getElementById("cancel-password").addEventListener("click", async () =>
   document.getElementById("blockedSites").style.display = "none";
 });
 
+//Annulation du changement de mot de passe en cas de perte de celui-ci
+document.getElementById("cancel-password2").addEventListener("click", async () => {
+  location.reload();
+});
+
 function loadBlockedSites() {
   chrome.storage.sync.get("blockedSites", (data) => {
     const sitesObj = data.blockedSites || {};
