@@ -4,8 +4,8 @@
 
   const currentDomain = window.location.hostname;
 
-  if (!currentDomain) {
-    // Si on n'est pas sur un site web valide
+  if (!currentDomain || currentDomain.includes("discord.com") || currentDomain.includes("instagram.com") || currentDomain.includes("reddit.com")) {
+    // Si on n'est pas sur un site web valide ou un où l'extension n'est pas fonctionnelle
     return;
   }
 
@@ -164,7 +164,7 @@
       isInput ? window[element.tagName === 'INPUT' ? 'HTMLInputElement' : 'HTMLTextAreaElement'].prototype : element,
       'value'
     )?.set;
-  
+
     element.focus();
 
     for (let i = 0; i < count; i++) {
@@ -179,23 +179,23 @@
         });
         element.dispatchEvent(event);
       });
-  
-      if (currentDomain.includes("telegram.com") || currentDomain.includes("tiktok.com") || currentDomain.includes("snapchat.com")){
+
+      if (currentDomain.includes("telegram.com") || currentDomain.includes("tiktok.com") || currentDomain.includes("snapchat.com")) {
         // Appliquer la suppression proprement
         if (nativeSetter && 'value' in element) {
           nativeSetter.call(element, element.value.slice(0, -1));
         } else if ('textContent' in element) {
           element.textContent = element.textContent.slice(0, -1);
         }
-    
+
         const inputEvent = new Event('input', { bubbles: true });
         element.dispatchEvent(inputEvent);
       }
     }
   }
-  
-  
-  
+
+
+
 
   // Fonction qui :
   // Affiche un message si la toxicité dépasse le seuil.
