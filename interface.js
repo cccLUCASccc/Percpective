@@ -214,7 +214,7 @@ document.getElementById("add-blocked-site-btn").addEventListener("click", () => 
   const domainRegex = /^(?!:\/\/)([a-zA-Z0-9-_]+\.)+[a-zA-Z]{2,11}?$/;
 
   if (!domainRegex.test(newSite)) {
-    alert("⚠️ Veuillez entrer un domaine valide (ex: example.com)");
+    alert("⚠️ Veuillez entrer un domaine valide (ex: www.exemple.com)");
     return;
   }
 
@@ -312,7 +312,6 @@ document.getElementById("recover-password-link").addEventListener("click", () =>
   chrome.storage.sync.get(["secretQuestion"], (data) => {
     const question = data.secretQuestion;
     if (question) {
-      document.getElementById("recovery-question").textContent = question;
       document.getElementById("recovery-section").style.display = "block";
     } else {
       alert("⚠️ Aucune question secrète n'a été définie.");
