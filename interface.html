@@ -200,7 +200,8 @@
 				flex: 1;
 			}
 
-			#submit {
+			#submit,
+			#submit-recovery-answer {
 				text-align: center;
 				width: 100%;
 			}
@@ -231,6 +232,18 @@
 				<h2 id="titleChangePassword"></h2>
 
 				<div id="new-password-section" style="display: block">
+					<label for="secret-question">Question secrète :</label>
+					<input
+						type="text"
+						id="secret-question"
+						placeholder="Entrez une question secrète"
+					/>
+					<label for="secret-answer">Réponse :</label>
+					<input
+						type="text"
+						id="secret-answer"
+						placeholder="Entrez la réponse"
+					/>
 					<label for="new-password">Mot de passe :</label>
 					<input type="password" id="new-password" />
 					<label for="confirm-password">Confirmation :</label>
@@ -248,6 +261,25 @@
 				<h2 id="title">Connexion</h2>
 				<input type="password" id="password" placeholder="Mot de passe" />
 				<button id="submit">Valider</button>
+				<p>
+					<a
+						href="#"
+						id="recover-password-link"
+						style="color: #cee4cc; text-decoration: underline"
+						>Mot de passe oublié ?</a
+					>
+				</p>
+				<div id="recovery-section" style="display: none">
+					<p>Votre question secrète :</p>
+					<p id="recovery-question"></p>
+					<label for="recovery-answer">Votre réponse :</label>
+					<input type="text" id="recovery-answer" />
+					<div id="buttonsGroup2">
+						<button id="submit-recovery-answer">Valider</button>
+						<button id="cancel-password2">Annuler</button>
+					</div>
+				</div>
+
 				<p id="message2" style="color: red"></p>
 			</div>
 
@@ -255,10 +287,10 @@
 				<h2>Votre bouclier contre le cyberharcèlement</h2>
 				<form id="config-form">
 					<p>
-						⚠️ Cette extension analyse les messages visibles sur les réseaux sociaux afin
-						d’identifier des contenus potentiellement inappropriés, à l’aide de
-						l’API Perspective développée par Google. Aucune donnée personnelle
-						n’est stockée ou partagée à des fins commerciales.
+						⚠️ Cette extension analyse les messages visibles sur les réseaux
+						sociaux afin d’identifier des contenus potentiellement inappropriés,
+						à l’aide de l’API Perspective développée par Google. Aucune donnée
+						personnelle n’est stockée ou partagée à des fins commerciales.
 					</p>
 
 					<div class="checkbox-container">
@@ -304,10 +336,14 @@
 		<div id="blockedSites">
 			<h2 id="sites">🚫 Sites bloqués</h2>
 			<ul id="blocked-sites-list"></ul>
-			<div id="add-site-form" style="margin-top: 10px;">
-				<input type="text" id="new-blocked-site" placeholder="Ajouter un site (ex: www.exemple.com)" />
+			<div id="add-site-form" style="margin-top: 10px">
+				<input
+					type="text"
+					id="new-blocked-site"
+					placeholder="Ajouter un site (ex: www.exemple.com)"
+				/>
 				<button id="add-blocked-site-btn">Ajouter</button>
-			</div>					  
+			</div>
 		</div>
 
 		<script src="interface.js"></script>

@@ -2,17 +2,12 @@
 
   // console.log("Extension CyberProtect injectée !");
 
-  // Garde fou complémentaire au manifest pour être certain que l'extension ne s'exécute pas sur des sites autres
-  // que ceux définis ci-dessous
-  // const authorizedDomains = ["instagram.com", "facebook.com", "x.com",
-  //   "messenger.com", "snapchat.com", "telegram.org", "whatsapp.com",
-  //   "tiktok.com", "discord.com"];
-  // const currentDomain = window.location.hostname;
+  const currentDomain = window.location.hostname;
 
-  // if (!currentDomain || !authorizedDomains.some(domain => currentDomain.includes(domain))) {
-  //   // console.log("CyberProtect : domaine non autorisé ou vide. Arrêt du script.");
-  //   return;
-  // }
+  if (!currentDomain) {
+    // Si on n'est pas sur un site web valide
+    return;
+  }
 
   // console.log("CyberProtect inspecte le domaine : " + currentDomain);
 
@@ -33,8 +28,7 @@
       const tempsRestant = DIX_JOURS_EN_MS - tempsEcoule;
 
       if (tempsRestant > 0) {
-        const joursRestants = Math.ceil(tempsRestant / (24 * 60 * 60 * 1000));
-        Blocage(`Vous êtes bloqué sur ce site pour comportements toxiques répétés.<br><br>⏳ Temps restant : <strong>${joursRestants} jour(s)</strong>`, false);
+        Blocage(`Vous êtes bloqué sur ce site pour comportements toxiques répétés.<br><br>⏳ Temps restant : <strong id="countdown"></strong>`, false, tempsRestant);
       } else {
         delete blockedSites[currentDomain];
         chrome.storage.sync.set({ blockedSites });
@@ -102,14 +96,13 @@
     }, 1000);
   }
 
-
   toggleExtensionBasedOnConsent((isActive) => {
     if (isActive) {
       startInterval();
     }
   });
 
-  // Listener qui redémarre l’analyse ou met à jour le seuil 
+  // Listener qui redémarre l’analyse ou met à jour le seuil
   // si consentGiven ou toxicityThreshold changent
   chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === 'local') {
@@ -239,10 +232,10 @@
   // Fonction qui :
   // Affiche une page noire bloquante sur le site.
   // Sauvegarde la date de blocage.
-  // Redirige vers une vidéo "éducative" lorsque l'utilisateur bouge sa souris 
-  function Blocage(message, activeVideo) {
+  // Redirige vers une vidéo "éducative" lorsque l'utilisateur bouge sa souris
+  function Blocage(message, activeVideo, tempsRestant) {
     const blocage = document.createElement('div');
-    blocage.textContent = message;
+    blocage.innerHTML = message;
     blocage.style.position = 'fixed';
     blocage.style.top = '0';
     blocage.style.left = '0';
@@ -254,28 +247,30 @@
     blocage.style.flexDirection = 'column';
     blocage.style.justifyContent = 'center';
     blocage.style.alignItems = 'center';
-    blocage.style.fontSize = '1.5rem';
-    blocage.style.fontFamily = 'Arial, sans-serif'
+    blocage.style.fontSize = '24px';
+    blocage.style.fontFamily = "Arial, sans-serif";
+    blocage.style.lineHeight = '1.2';
     blocage.style.textAlign = 'center';
-    blocage.style.padding = '20px';
     blocage.style.zIndex = '9999';
 
     blocage.innerHTML = `
     <p><span style="font-size: 180px;">💀</span></p>
-    <p>${message}</p>
+    <p style="padding-top: 15px">${message}</p>
   `;
 
     document.body.appendChild(blocage);
 
     const currentDomain = window.location.hostname;
-    const blockTimestamp = Date.now();
 
+    // Vérifie si le blocage existe déjà pour éviter de mettre à jour le timestamp
     chrome.storage.sync.get(['blockedSites'], (result) => {
       const blockedSites = result.blockedSites || {};
-      blockedSites[currentDomain] = {
-        timestamp: blockTimestamp
-      };
-      chrome.storage.sync.set({ blockedSites });
+      if (!blockedSites[currentDomain]) {
+        blockedSites[currentDomain] = {
+          timestamp: Date.now()
+        };
+        chrome.storage.sync.set({ blockedSites });
+      }
     });
 
     allBloqued = true;
@@ -298,6 +293,33 @@
         document.body.removeChild(a);
       });
     }
+
+    // Démarre le compte à rebours
+    startCountdown(tempsRestant);
+  }
+
+  // Fonction qui démarre le compte à rebours
+  function startCountdown(tempsRestant) {
+    const countdownElement = document.getElementById('countdown');
+    if (!countdownElement) return;
+
+    function updateCountdown() {
+      const jours = Math.floor(tempsRestant / (1000 * 60 * 60 * 24));
+      const heures = Math.floor((tempsRestant % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((tempsRestant % (1000 * 60 * 60)) / (1000 * 60));
+      const secondes = Math.floor((tempsRestant % (1000 * 60)) / 1000);
+
+      countdownElement.innerHTML = `${jours}j ${heures}h ${minutes}m ${secondes}s`;
+
+      tempsRestant -= 1000;
+      if (tempsRestant < 0) {
+        clearInterval(countdownInterval);
+        location.reload(); // Rafraîchit la page pour redonner accès à l'utilisateur
+      }
+    }
+
+    updateCountdown(); // Met à jour immédiatement le compte à rebours
+    const countdownInterval = setInterval(updateCountdown, 1000);
   }
 
   // Fonction qui :
