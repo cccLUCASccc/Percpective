@@ -160,7 +160,7 @@
   // Fonction qui simule des Backspace
   function simulateBackspaces(element, count) {
     element.focus();
-  
+
     for (let i = 0; i < count; i++) {
       // Dispatch full key lifecycle
       ['keydown', 'keypress', 'keyup'].forEach(type => {
@@ -174,7 +174,7 @@
         });
         element.dispatchEvent(event);
       });
-  
+
       // Optionnel mais souvent nécessaire : modifier le texte manuellement
       if (element.value !== undefined) {
         element.value = element.value.slice(0, -1); // Pour les <input> ou <textarea>
@@ -183,7 +183,7 @@
       }
     }
   }
-  
+
 
   // Fonction qui :
   // Affiche un message si la toxicité dépasse le seuil.
@@ -350,7 +350,7 @@
         signal: controller.signal,
         body: JSON.stringify({
           comment: { text },
-          languages: ["fr"],
+          languages: ["fr", "en"],
           requestedAttributes: { TOXICITY: {} }
         })
       });

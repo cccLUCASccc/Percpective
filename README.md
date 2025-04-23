@@ -9,7 +9,7 @@
   </tr>
 </table>
 
-**CyberProtect** est une extension Chrome qui détecte et modère les comportements toxiques sortants sur les réseaux sociaux.<br>
+**CyberProtect** est une extension Chrome qui détecte et modère les comportements toxiques sortants sur les réseaux sociaux principalement, mais pas seulement.<br>
 Elle utilise l'API CommentAnalyzer pour analyser les messages saisis avant qu'ils ne soient envoyés.
 
 ---
@@ -35,12 +35,15 @@ Elle utilise l'API CommentAnalyzer pour analyser les messages saisis avant qu'il
 
 - Facebook
 - Messenger
+- Snapchat
+- Telegram
+- Tiktok,
 - Twitter
 - Whatsapp
 
 ---
 
-## 📚 Manuel d'utilisation
+## 📚 Manuel d'utilisation  
 
 ### I) Partie administration :
 
