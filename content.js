@@ -158,11 +158,16 @@
   }, true);
 
   // Fonction qui simule des Backspace
-  function simulateBackspaces(element, count) {
+  function simulateBackspaces(element, count, currentDomain) {
+    const isInput = element.tagName === 'INPUT' || element.tagName === 'TEXTAREA';
+    const nativeSetter = Object.getOwnPropertyDescriptor(
+      isInput ? window[element.tagName === 'INPUT' ? 'HTMLInputElement' : 'HTMLTextAreaElement'].prototype : element,
+      'value'
+    )?.set;
+  
     element.focus();
 
     for (let i = 0; i < count; i++) {
-      // Dispatch full key lifecycle
       ['keydown', 'keypress', 'keyup'].forEach(type => {
         const event = new KeyboardEvent(type, {
           key: 'Backspace',
@@ -174,16 +179,23 @@
         });
         element.dispatchEvent(event);
       });
-
-      // Optionnel mais souvent nécessaire : modifier le texte manuellement
-      if (element.value !== undefined) {
-        element.value = element.value.slice(0, -1); // Pour les <input> ou <textarea>
-      } else if (element.textContent !== undefined) {
-        element.textContent = element.textContent.slice(0, -1); // Pour les <div contenteditable>
+  
+      if (currentDomain.includes("telegram.com") || currentDomain.includes("tiktok.com") || currentDomain.includes("snapchat.com")){
+        // Appliquer la suppression proprement
+        if (nativeSetter && 'value' in element) {
+          nativeSetter.call(element, element.value.slice(0, -1));
+        } else if ('textContent' in element) {
+          element.textContent = element.textContent.slice(0, -1);
+        }
+    
+        const inputEvent = new Event('input', { bubbles: true });
+        element.dispatchEvent(inputEvent);
       }
     }
   }
-
+  
+  
+  
 
   // Fonction qui :
   // Affiche un message si la toxicité dépasse le seuil.
@@ -235,7 +247,7 @@
             ? lastEditableElement.innerText
             : lastEditableElement.value;
 
-          simulateBackspaces(lastEditableElement, text.length);
+          simulateBackspaces(lastEditableElement, text.length, currentDomain);
           lastText = "";
         }
       }
