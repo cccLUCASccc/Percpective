@@ -23,7 +23,7 @@
     const blockedSites = result.blockedSites || {};
     const blocage = blockedSites[currentDomain];
 
-    if (blocage.manual !== undefined && blocage.manual) {
+    if (blocage && blocage.manual !== undefined && blocage.manual) {
       BlocageManuel("Vous n'avez pas accès à ce site");
       allBloqued = true;
     } else if (blocage && blocage.timestamp) {
