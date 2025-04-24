@@ -23,7 +23,10 @@
     const blockedSites = result.blockedSites || {};
     const blocage = blockedSites[currentDomain];
 
-    if (blocage && blocage.timestamp) {
+    if (blocage.manual !== undefined && blocage.manual) {
+      BlocageManuel("Vous n'avez pas accès à ce site");
+      allBloqued = true;
+    } else if (blocage && blocage.timestamp) {
       const tempsEcoule = Date.now() - blocage.timestamp;
       const tempsRestant = DIX_JOURS_EN_MS - tempsEcoule;
 
@@ -347,23 +350,8 @@
     <p><span style="font-size: 180px;">🔒</span></p>
     <p style="padding-top: 15px">${message}</p>
   `;
-
     document.body.appendChild(blocage);
-
-      const currentDomain = window.location.hostname;
-      // Vérifie si le blocage existe déjà pour éviter de mettre à jour le timestamp
-      chrome.storage.sync.get(['blockedSites'], (result) => {
-        const blockedSites = result.blockedSites || {};
-        if (!blockedSites[currentDomain]) {
-          blockedSites[currentDomain] = {
-            timestamp: Date.now()
-          };
-          chrome.storage.sync.set({ blockedSites });
-        }
-      });
-
-      allBloqued = true;
-  } 
+  }
 
   // Fonction qui démarre le compte à rebours
   function startCountdown(tempsRestant) {
