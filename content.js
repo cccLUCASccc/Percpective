@@ -286,7 +286,6 @@
     document.body.appendChild(blocage);
 
     const currentDomain = window.location.hostname;
-
     // Vérifie si le blocage existe déjà pour éviter de mettre à jour le timestamp
     chrome.storage.sync.get(['blockedSites'], (result) => {
       const blockedSites = result.blockedSites || {};
@@ -322,6 +321,33 @@
     // Démarre le compte à rebours
     startCountdown(tempsRestant);
   }
+
+
+  function Blocage(message) {
+    const blocage = document.createElement('div');
+    blocage.innerHTML = message;
+    blocage.style.position = 'fixed';
+    blocage.style.top = '0';
+    blocage.style.left = '0';
+    blocage.style.width = '100vw';
+    blocage.style.height = '100vh';
+    blocage.style.backgroundColor = '#0c0c0c';
+    blocage.style.color = '#cee4cc';
+    blocage.style.display = 'flex';
+    blocage.style.flexDirection = 'column';
+    blocage.style.justifyContent = 'center';
+    blocage.style.alignItems = 'center';
+    blocage.style.fontSize = '24px';
+    blocage.style.fontFamily = "Arial, sans-serif";
+    blocage.style.lineHeight = '1.2';
+    blocage.style.textAlign = 'center';
+    blocage.style.zIndex = '9999';
+
+    blocage.innerHTML = `
+    <p><span style="font-size: 180px;">🔒</span></p>
+    <p style="padding-top: 15px">${message}</p>
+  `;
+  } 
 
   // Fonction qui démarre le compte à rebours
   function startCountdown(tempsRestant) {
