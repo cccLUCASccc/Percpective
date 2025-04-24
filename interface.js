@@ -174,7 +174,7 @@ function loadBlockedSites() {
       // Si des sites bloqués sont trouvés
       Object.entries(sitesObj).forEach(([site, details]) => {
         const li = document.createElement("li");
-        li.textContent = site + " ";
+        li.textContent = `${site} ${details.manual ? '✋' : ''}`;
 
         const btn = document.createElement("button");
         btn.textContent = "Débloquer";
