@@ -31,7 +31,7 @@ Elle utilise l'API CommentAnalyzer pour analyser les messages saisis avant qu'il
 
 ---
 
-## 🧪 Fonctionne avec les réseaux sociaux suivants :
+## 🧪 Fonctionne avec les réseaux sociaux suivants
 
 - Facebook
 - Messenger
@@ -43,9 +43,9 @@ Elle utilise l'API CommentAnalyzer pour analyser les messages saisis avant qu'il
 
 ---
 
-## 📚 Manuel d'utilisation  
+## 📚 Manuel d'utilisation
 
-### I) Partie administration :
+### I) <u>Partie administration</u> :
 
 A l'ouverture de l'extension il est demandé à l'authorité parentale de renseigner :
 
@@ -112,7 +112,7 @@ Cette partie vous permet d'accéder à l'écran de modification du mot de passe.
 
 ![Ecran de la question secrète](/images/image-6.png)
 
-### II) Partie utilisateur :
+### II) <u>Partie utilisateur</u> :
 
 Lorsque l'extension est activée elle analyse les saisies clavier sur les sites décrits en début de ce manuel.
 
