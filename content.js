@@ -347,6 +347,22 @@
     <p><span style="font-size: 180px;">🔒</span></p>
     <p style="padding-top: 15px">${message}</p>
   `;
+
+    document.body.appendChild(blocage);
+
+      const currentDomain = window.location.hostname;
+      // Vérifie si le blocage existe déjà pour éviter de mettre à jour le timestamp
+      chrome.storage.sync.get(['blockedSites'], (result) => {
+        const blockedSites = result.blockedSites || {};
+        if (!blockedSites[currentDomain]) {
+          blockedSites[currentDomain] = {
+            timestamp: Date.now()
+          };
+          chrome.storage.sync.set({ blockedSites });
+        }
+      });
+
+      allBloqued = true;
   } 
 
   // Fonction qui démarre le compte à rebours
