@@ -11,9 +11,9 @@
 
   // console.log("CyberProtect inspecte le domaine : " + currentDomain);
 
-  const DIX_JOURS_EN_MS = 10 * 24 * 60 * 60 * 1000;
-  const defaultThreshold = 30;
-  const redirectionUrl = 'https://www.youtube.com/embed/blar1yAMXWQ?autoplay=1&controls=0&rel=0&showinfo=0&modestbranding=1';
+  const DIX_JOURS_EN_MS = 10 * 24 * 60 * 60 * 1000; //Temps de bloçage des sites (10 jours par défaut)
+  const defaultThreshold = 30; //Seuil de toxicité
+  const redirectionUrl = 'https://www.youtube.com/embed/blar1yAMXWQ?autoplay=1&controls=0&rel=0&showinfo=0&modestbranding=1'; //Vidéo de sensibilisation
 
   // On récupère la liste des sites bloqués à partir du Local Storage
   // Si le site courant est bloqué on calcule le temps écoulé
@@ -72,8 +72,8 @@
     });
   }
 
-  let intervalId = null;
-  let allBloqued = false;
+  let intervalId = null; //L'interval de temps entre 2 soumissions
+  let allBloqued = false; //Bloçage de la saisie pendant la soumission du texte saisi
 
   // Concerne l'interval
   // Toutes les secondes : on récupère l’élément actuellement édité.
@@ -99,6 +99,7 @@
     }, 1000);
   }
 
+  // Active la détection
   toggleExtensionBasedOnConsent((isActive) => {
     if (isActive) {
       startInterval();
@@ -123,11 +124,11 @@
     }
   });
 
-  let lastText = "";
-  let enterBlocked = false;
+  let lastText = ""; //Le contenu du dernier message saisi soumis
+  let enterBlocked = false; //Est-ce que la touche Enter est bloquée ?
   let controller = new AbortController();
-  let essais = 3;
-  let lastEditableElement = null;
+  let essais = 3; //Nombre d'essai avant bloçage du site
+  let lastEditableElement = null; //Référence à l'élément dans lequel a été saisi le message
 
   //Fonction qui retourne l'élément actif
   function getActiveEditableElement() {
@@ -183,6 +184,7 @@
         element.dispatchEvent(event);
       });
 
+      //N'exécuter ce code que sur certains sites (ne fonctionne pas avec les autres)
       if (currentDomain.includes("telegram.com") || currentDomain.includes("tiktok.com") || currentDomain.includes("snapchat.com")) {
         // Appliquer la suppression proprement
         if (nativeSetter && 'value' in element) {
@@ -196,9 +198,6 @@
       }
     }
   }
-
-
-
 
   // Fonction qui :
   // Affiche un message si la toxicité dépasse le seuil.
@@ -257,7 +256,7 @@
     }, 6000);
   }
 
-  // Fonction qui :
+  // Fonction pour les bloçages automatiques :
   // Affiche une page noire bloquante sur le site.
   // Sauvegarde la date de blocage.
   // Redirige vers une vidéo "éducative" lorsque l'utilisateur bouge sa souris
@@ -325,7 +324,8 @@
     startCountdown(tempsRestant);
   }
 
-
+  // Fonction pour les bloçages manuels :
+  // Affiche une page noire bloquante sur le site.
   function BlocageManuel(message) {
     const blocage = document.createElement('div');
     blocage.innerHTML = message;
