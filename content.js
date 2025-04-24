@@ -323,7 +323,7 @@
   }
 
 
-  function Blocage(message) {
+  function BlocageManuel(message) {
     const blocage = document.createElement('div');
     blocage.innerHTML = message;
     blocage.style.position = 'fixed';
