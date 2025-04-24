@@ -23,7 +23,10 @@
     const blockedSites = result.blockedSites || {};
     const blocage = blockedSites[currentDomain];
 
-    if (blocage && blocage.timestamp) {
+    if (blocage.manual !== undefined && blocage.manual) {
+      BlocageManuel("Vous n'avez pas accès à ce site");
+      allBloqued = true;
+    } else if (blocage && blocage.timestamp) {
       const tempsEcoule = Date.now() - blocage.timestamp;
       const tempsRestant = DIX_JOURS_EN_MS - tempsEcoule;
 
@@ -347,7 +350,8 @@
     <p><span style="font-size: 180px;">🔒</span></p>
     <p style="padding-top: 15px">${message}</p>
   `;
-  } 
+    document.body.appendChild(blocage);
+  }
 
   // Fonction qui démarre le compte à rebours
   function startCountdown(tempsRestant) {

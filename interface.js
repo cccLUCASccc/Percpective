@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   loadBlockedSites();
 
- 
+
   chrome.storage.sync.get(["consentGiven", "toxicityThreshold"], (result) => {
     if (typeof result.consentGiven !== "undefined") {
       document.getElementById("consentGiven").checked = result.consentGiven;
@@ -114,7 +114,7 @@ document.getElementById("save-password").addEventListener("click", async () => {
     return;
   }
 
- 
+
 
   const hash = await hashPassword(newPass);
   const answerHash = await hashPassword(answer);
@@ -205,8 +205,10 @@ document.getElementById("add-blocked-site-btn").addEventListener("click", () => 
   chrome.storage.sync.get(['blockedSites'], (result) => {
     const blockedSites = result.blockedSites || {};
 
-    // Ajouter le nouveau site à la liste des sites bloqués avec un timestamp
-    blockedSites[newSite] = { timestamp: Date.now() };
+    // Ajouter le nouveau site à la liste des sites bloqués avec :
+    // - un timestamp,
+    // - information de l'ajout manuel
+    blockedSites[newSite] = { timestamp: Date.now(), manual: true };
 
     chrome.storage.sync.set({ blockedSites }, () => {
       loadBlockedSites();  // Mettre à jour la liste après l'ajout
