@@ -1,8 +1,9 @@
+// S'exécute au chargement d'un site
 document.addEventListener("DOMContentLoaded", async () => {
 
-  loadBlockedSites();
+  loadBlockedSites(); // Chargement de la liste des sites bloqués
 
-
+  // Chargement et setting des paramètres
   chrome.storage.sync.get(["consentGiven", "toxicityThreshold"], (result) => {
     if (typeof result.consentGiven !== "undefined") {
       document.getElementById("consentGiven").checked = result.consentGiven;
@@ -15,6 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  //Gestion de l'affichages des div selon les différentes situations
   chrome.storage.sync.get("isAuthenticated", (authResult) => {
     if (authResult.isAuthenticated) {
       chrome.storage.sync.get("openParameters", (param) => {
@@ -30,8 +32,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           document.getElementById("getRightToAccess").style.display = "none";
           document.getElementById("createPassword").style.display = "none";
           document.getElementById("blockedSites").style.display = "none";
-
-
         }
       })
     } else {
@@ -61,11 +61,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("appVersion").textContent = "V" + manifest.version;
 });
 
+// Ajustement de la valeur du % par rapport à la position du slider
 document.getElementById("toxicityThreshold").addEventListener("input", (event) => {
   const thresholdValue = document.getElementById("threshold-value");
   thresholdValue.textContent = `${event.target.value}%`;
 });
 
+// Sauvegarde des paramètres
 document.getElementById("saveConsentAndSeuil").addEventListener("click", () => {
 
   const consentGiven = document.getElementById("consentGiven").checked;
@@ -82,18 +84,22 @@ document.getElementById("saveConsentAndSeuil").addEventListener("click", () => {
   );
 });
 
+// Vérification si le texte contient une majuscule
 function containsUpperCase(str) {
   return /[A-Z]/.test(str);
 }
 
+// Vérification si le texte contient une minuscule
 function containsLowerCase(str) {
   return /[a-z]/.test(str);
 }
 
+// Vérification si le texte contient un caractère spécials
 function containsSpecial(str) {
   return /[-&@#§!%£*$=+~?\/\\]/.test(str);
 }
-//Soumission du mot de passe Administrateur
+
+// Soumission du mot de passe Administrateur et de la question secrète
 document.getElementById("save-password").addEventListener("click", async () => {
   const question = document.getElementById("secret-question").value.trim();
   const answer = document.getElementById("secret-answer").value.trim();
@@ -114,10 +120,8 @@ document.getElementById("save-password").addEventListener("click", async () => {
     return;
   }
 
-
-
-  const hash = await hashPassword(newPass);
-  const answerHash = await hashPassword(answer);
+  const hash = await hashPassword(newPass); //Le mot de passe hashé
+  const answerHash = await hashPassword(answer); //La réponse à la question secrète hashée
 
   document.getElementById("setParams").style.display = "block";
   document.getElementById("getRightToAccess").style.display = "none";
@@ -143,7 +147,7 @@ document.getElementById("save-password").addEventListener("click", async () => {
   });
 });
 
-//Annulation du changement de mot de passe Administrateur
+// Annulation du changement du mot de passe Administrateur
 document.getElementById("cancel-password").addEventListener("click", async () => {
   chrome.storage.sync.remove("openParameters");
   document.getElementById("setParams").style.display = "block";
@@ -152,11 +156,12 @@ document.getElementById("cancel-password").addEventListener("click", async () =>
   document.getElementById("blockedSites").style.display = "none";
 });
 
-//Annulation du changement de mot de passe en cas de perte de celui-ci
+// Annulation du changement de mot de passe en cas de perte de celui-ci
 document.getElementById("cancel-password2").addEventListener("click", async () => {
   location.reload();
 });
 
+// Chargement de la liste des sités bloqués
 function loadBlockedSites() {
   chrome.storage.sync.get("blockedSites", (data) => {
     const sitesObj = data.blockedSites || {};
@@ -192,6 +197,7 @@ function loadBlockedSites() {
   });
 }
 
+// Bloçage manuel d'un site
 document.getElementById("add-blocked-site-btn").addEventListener("click", () => {
   const input = document.getElementById("new-blocked-site");
   const newSite = input.value.trim();
@@ -217,8 +223,7 @@ document.getElementById("add-blocked-site-btn").addEventListener("click", () => 
   });
 });
 
-
-
+// Hashage du mot de passe
 async function hashPassword(password) {
   const encoder = new TextEncoder();
   const data = encoder.encode(password);
@@ -227,7 +232,6 @@ async function hashPassword(password) {
     .map(b => b.toString(16).padStart(2, "0"))
     .join("");
 }
-// });
 
 // Vérification du mot de passe saisi au login
 document.getElementById("submit").addEventListener("click", async () => {
@@ -236,7 +240,7 @@ document.getElementById("submit").addEventListener("click", async () => {
   const inputHash = await hashPassword(password);
   if (inputHash === storage.adminPasswordHash) {
     await chrome.storage.sync.set({ isAuthenticated: true });
-    // Programmer la suppression du droit d'accès (voir background.js)
+    // Activer le compteur pour déconnecter l'administrateur (voir background.js)
     chrome.runtime.sendMessage({ action: "startTimer" });
     document.getElementById("setParams").style.display = "block";
     document.getElementById("getRightToAccess").style.display = "none";
@@ -265,10 +269,12 @@ async function logoutUser() {
   }
 }
 
+// Stocke l'état de la fenêtre des paramètres
 document.getElementById("open-options").addEventListener("click", async () => {
   await chrome.storage.sync.set({ openParameters: true });
 });
 
+// Définition du titre selon la création ou la modification du mot de passe Admin
 chrome.storage.sync.get("openParameters", (param) => {
   if (param.openParameters !== undefined && param.openParameters === true) {
     document.getElementById("titleChangePassword").textContent = "Modification du mot de passe Admin";
@@ -305,6 +311,7 @@ document.getElementById("recover-password-link").addEventListener("click", () =>
   });
 });
 
+// Validation de la réponse à la question secrète
 document.getElementById("submit-recovery-answer").addEventListener("click", async () => {
   const answer = document.getElementById("recovery-answer").value.trim();
   const answerHash = await hashPassword(answer);

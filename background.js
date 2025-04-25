@@ -6,7 +6,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         await chrome.storage.sync.remove("isAuthenticated");
         await chrome.storage.sync.remove("openParameters");
 
-        // Notification
+        // Notification de déconnexion
         chrome.notifications.create({
           type: "basic",
           iconUrl: "icons/icon_48.png",
