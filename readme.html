@@ -12,7 +12,7 @@
 				display: flex;
 				justify-content: center;
 			}
-		
+
 			.container {
 				max-width: 500px;
 				width: 100%;
@@ -20,19 +20,20 @@
 				box-sizing: border-box;
 				text-align: left; /* Texte aligné à gauche à l'intérieur */
 			}
-		
-			h1, h2 {
+
+			h1,
+			h2 {
 				color: #ffffff;
 				margin-bottom: 20px;
-				text-align: center; /* Les titres restent centrés si tu veux */
+				text-align: left;
 			}
-		
+
 			p {
 				font-size: 14px;
 				margin-bottom: 16px;
 				line-height: 1.6;
 			}
-		
+
 			a {
 				color: #0df024;
 				text-decoration: none;
@@ -40,7 +41,7 @@
 				font-weight: bold;
 				transition: color 0.3s ease;
 			}
-		
+
 			a::after {
 				content: "";
 				position: absolute;
@@ -53,21 +54,23 @@
 				transform-origin: left;
 				transition: transform 0.3s ease;
 			}
-		
+
 			a:hover {
 				color: #0bbf1c;
 			}
-		
+
 			a:hover::after {
 				transform: scaleX(1);
 			}
-		
+
 			form {
 				display: flex;
 				flex-direction: column;
 			}
-		
-			input, select, textarea {
+
+			input,
+			select,
+			textarea {
 				padding: 10px;
 				width: 100%;
 				border-radius: 6px;
@@ -77,20 +80,24 @@
 				margin-bottom: 15px;
 				transition: border-color 0.2s ease;
 			}
-		
-			input:focus, textarea:focus, select:focus {
+
+			input:focus,
+			textarea:focus,
+			select:focus {
 				border-color: #0df024;
 				outline: none;
 			}
-		
-			input[type="checkbox"], input[type="range"] {
+
+			input[type="checkbox"],
+			input[type="range"] {
 				width: auto;
 				margin-right: 10px;
 				cursor: pointer;
 				accent-color: #0df024;
 			}
-		
-			button, .submit {
+
+			button,
+			.submit {
 				padding: 12px 20px;
 				background-color: #0df024;
 				color: #0c0c0c;
@@ -104,11 +111,12 @@
 				width: 100%;
 				text-align: center;
 			}
-		
-			button:hover, .submit:hover {
+
+			button:hover,
+			.submit:hover {
 				background-color: #0bbf1c;
 			}
-		
+
 			#header {
 				display: flex;
 				flex-direction: column;
@@ -118,12 +126,12 @@
 				border-bottom: 1px solid #333;
 				padding-bottom: 10px;
 			}
-		
+
 			#header small {
 				font-size: 12px;
 				color: #aaaaaa;
 			}
-		
+
 			.checkbox-container {
 				display: flex;
 				align-items: center;
@@ -131,68 +139,67 @@
 				font-size: 14px;
 				width: 100%;
 			}
-		
+
 			label {
 				font-size: 14px;
 				width: 100%;
 				margin-bottom: 10px;
 			}
-		
+
 			.range-container {
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
 				width: 100%;
 			}
-		
+
 			#threshold-value {
 				font-weight: bold;
 				font-size: 13px;
 				color: #0df024;
 			}
-		
+
 			ul {
 				list-style: none;
 				padding: 0;
 			}
-		
+
 			li button {
 				margin-left: 10px;
 				padding: 5px 10px;
 				font-size: 12px;
 			}
-		
-			#buttonsGroup, #buttonsGroup2 {
+
+			#buttonsGroup,
+			#buttonsGroup2 {
 				display: flex;
 				justify-content: space-between;
 				gap: 10px;
 				width: 100%;
 			}
-		
+
 			#sites {
 				padding-top: 20px;
 				border-top: 1px solid #333;
 			}
-		
+
 			.disclaimer {
 				font-size: 11px;
 				color: #a2a2a2;
 				margin-top: 20px;
 			}
 		</style>
-		
-		
-		
+
 		<meta charset="UTF-8" />
 		<title>README</title>
 	</head>
 	<div class="container"> 
 		<body>
 			<div id="content"></div>
-	
+
 			<!-- Librairie Markdown locale -->
 			<script src="libs/marked.min.js"></script>
-	
+
 			<!-- Script externe pour charger le contenu -->
 			<script src="readme.js"></script>
 		</body>
