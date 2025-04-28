@@ -184,9 +184,12 @@ function loadBlockedSites() {
         const btn = document.createElement("button");
         btn.textContent = "Débloquer";
         btn.addEventListener("click", () => {
+          //Déblocage d'un site manuellement
           delete sitesObj[site];
           chrome.storage.sync.set({ blockedSites: sitesObj }, () => {
             loadBlockedSites();
+            // Une fois enregistré, on met à jour les règles
+            chrome.runtime.sendMessage({ action: "updateBlockingRules" });
           });
         });
 
@@ -219,6 +222,8 @@ document.getElementById("add-blocked-site-btn").addEventListener("click", () => 
     chrome.storage.sync.set({ blockedSites }, () => {
       loadBlockedSites();  // Mettre à jour la liste après l'ajout
       input.value = "";  // Effacer le champ de texte
+      // Une fois enregistré, on met à jour les règles
+      chrome.runtime.sendMessage({ action: "updateBlockingRules" });
     });
   });
 });
