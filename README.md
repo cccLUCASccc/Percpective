@@ -145,3 +145,7 @@ Si l'utilisateur essaie d'ouvrir le réseau social il aura une belle surprise :
 
 Ce projet est destiné à un usage personnel ou éducatif.  
 Toute reproduction ou diffusion nécessite l’accord explicite des auteurs.
+
+---
+
+## 📝 <a href="/private/privacyRules.html" title="Privacy rules">Politique de confidentialité</a>
