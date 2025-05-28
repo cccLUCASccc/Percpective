@@ -1,3 +1,10 @@
+// Ouvre les règles de confidentialité en html
+document.getElementById('open-privacyRules').addEventListener('click', () => {
+  chrome.tabs.create({
+    url: chrome.runtime.getURL('/private/privacyRules.html')
+  });
+});
+
 //Permet de charger le fichier readme.md et de le convertir en html
 fetch(chrome.runtime.getURL('readme.md'))
   .then(response => response.text())

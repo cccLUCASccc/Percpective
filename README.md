@@ -148,4 +148,4 @@ Toute reproduction ou diffusion nécessite l’accord explicite des auteurs.
 
 ---
 
-## 📝 <a href="/private/privacyRules.html" title="Privacy rules">Politique de confidentialité</a>
+## 📝 <a href="#" id="open-privacyRules" title="Privacy rules">Politique de confidentialité</a>
