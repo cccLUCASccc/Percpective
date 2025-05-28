@@ -304,6 +304,13 @@ document.getElementById('open-readme').addEventListener('click', () => {
   });
 });
 
+// Ouvre les règles de confidentialité en html
+// document.getElementById('open-privacyRules').addEventListener('click', () => {
+//   chrome.tabs.create({
+//     url: chrome.runtime.getURL('/private/privacyRules.html')
+//   });
+// });
+
 // Récupération du mot de passe via la question secrète
 document.getElementById("recover-password-link").addEventListener("click", () => {
   chrome.storage.sync.get(["secretQuestion"], (data) => {
