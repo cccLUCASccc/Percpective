@@ -3,8 +3,8 @@
 	"name": "CyberProtect",
 	"version": "1.3",
 	"description": "D\u00e9tecte et traite automatiquement les messages \u00e0 caract\u00e8re toxique sortants sur les reseaux sociaux. Blocage de site personnalisé.",
-	"permissions": ["storage", "notifications"],
-	"host_permissions": ["<all_urls>"],
+	"permissions": ["storage", "notifications", "declarativeNetRequest"],
+
 	"icons": {
 		"16": "icons/icon_16.png",
 		"48": "icons/icon_48.png",
